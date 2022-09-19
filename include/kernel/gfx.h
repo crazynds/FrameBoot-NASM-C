@@ -1,7 +1,7 @@
 #ifndef GFX_H
     #define GFX_H
 
-        #include "../../lib/stdvar.h"
+        #include <stdvar.h>
 
 
         //Utilitários para kprintnum

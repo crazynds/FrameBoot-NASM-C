@@ -24,7 +24,7 @@
     cmp ax,0
     je $ ; Se ele retornou 0, significa que ele não conseguiu ler por algum erro.
 
-    %include "src/asm_kernel/bootloader/memory_maper.asm"
+    %include "boot/memory_maper.asm"
 
     call ChangeA20  ;Ativa memoria alta
     call CheckA20   ;Checa se memoria alta ta ativa
@@ -33,16 +33,16 @@
     ;mov esp, INI_PILHA  ;Aonde vai começar a stack
 
     
-    %include "src/asm_kernel/bootloader/kernel_64.asm"
+    %include "boot/kernel_64.asm"
 
     ;jmp INI_KERNEL
     ;;
 
 
-%include "src/asm_kernel/bootloader/vars.asm"
+%include "boot/vars.asm"
 
-%include "src/asm_kernel/bootloader/a20_high_memory.asm"
-%include "src/asm_kernel/bootloader/gdt.asm"
+%include "boot/a20_high_memory.asm"
+%include "boot/gdt.asm"
 
 ; ADICIONAR A ASSINATURA DE BOOT
 times 510-($-$$) db 0

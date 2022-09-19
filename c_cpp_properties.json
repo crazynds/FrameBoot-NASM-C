@@ -1,0 +1,17 @@
+{
+    "configurations": [
+      {
+        "name": "SOOS",
+        "includePath": [
+            "${workspaceFolder}/include"
+        ],
+        "browse": {
+            "path": ["${workspaceFolder}"],
+            "limitSymbolsToIncludedHeaders": true,
+            "databaseFilename": ""
+        },
+        "cStandard": "c11"
+      }
+    ]
+  }
+  

@@ -1,9 +1,9 @@
 
 [bits 64]
-%include "src/asm_kernel/funcs/start_kernel.asm"
+%include "asm/funcs/start_kernel.asm"
 
-%include "src/asm_kernel/funcs/macros.asm"
-%include "src/asm_kernel/funcs/extra_utils.asm"
+%include "asm/funcs/macros.asm"
+%include "asm/funcs/extra_utils.asm"
 
 [extern kmain]
 [extern kloop]

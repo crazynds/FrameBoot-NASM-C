@@ -1,7 +1,7 @@
 #ifndef ASM_FUNCTIONS_H
     #define ASM_FUNCTIONS_H
 
-    #include "lib/stdvar.h"
+    #include <stdvar.h>
 
     // If stack failed to aling this function will be called
     extern void __stack_chk_fail(void);

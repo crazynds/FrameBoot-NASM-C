@@ -1,7 +1,7 @@
-#include "stdvar.h"
+#include <stdvar.h>
 // #include "../header/Thread.h"
-#include "stdio.h"
-#include "System.h"
+#include <stdio.h>
+#include <System.h>
 
 //uint32 _sprintf(char *out, char *str,const void *var_list);
 

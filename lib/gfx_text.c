@@ -1,4 +1,4 @@
-#include "../header/gfx.h"
+#include <kernel/gfx.h>
 
 short *VGA_MEM=(short *)0xb8000;
 
