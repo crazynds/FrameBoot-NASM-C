@@ -1,4 +1,6 @@
-#include "Head.h"
+#include <stdvar.h>
+#include <kernel/asmFunctions.h>
+#include <kernel/gfx.h>
 
 
 void kmain(void){
