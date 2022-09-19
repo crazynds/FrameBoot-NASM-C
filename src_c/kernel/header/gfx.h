@@ -1,7 +1,8 @@
 #ifndef GFX_H
     #define GFX_H
 
-        #include "Variaveis.h"
+        #include "../../lib/stdvar.h"
+
 
         //Utilitários para kprintnum
         void int_asc(int64 num, char *numero);

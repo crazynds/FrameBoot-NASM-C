@@ -1,4 +1,4 @@
-#include "../header/Variaveis.h"
+#include "stdvar.h"
 // #include "../header/Thread.h"
 #include "stdio.h"
 #include "System.h"
