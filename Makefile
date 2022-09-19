@@ -15,8 +15,8 @@ bin/os-image: bin/boot_sect.bin bin/kernel.bin
 	cat bin/boot_sect.bin bin/kernel.bin > bin/os-image
 
 
-bin/all_src.c: lib/*
-	./lib/compile.sh
+bin/all_src.c: lib/* compile.sh
+	./compile.sh
 
 bin/kernel.bin: app/kernel.c bin/all_src.c asm/kernel_entry.asm
 	nasm asm/kernel_entry.asm -f elf64 -o bin/entry.o
