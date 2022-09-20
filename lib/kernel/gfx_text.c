@@ -42,10 +42,16 @@ int gettam_num(int64 num){
 }
 void int_asc(int64 number, char *numberArray){
     int n = gettam_num(number);
-    int i;
-    numberArray[n]='\0';
-    for ( i = n-1; i >= 0; --i, number /= 10 ){
-        numberArray[i] = '0' + number % 10;
+    int i=n-1;
+    char neg =0;
+    if(number<0){
+        numberArray[0]='-';
+        neg=1;
+        number*=-1;
+    }
+    numberArray[n+neg]='\0';
+    for (; i >= 0; --i, number /= 10 ){
+        numberArray[i+neg] = '0' + number % 10;
     }
 }
 void kprintnum(int a,int b,int64 x){
