@@ -30,13 +30,20 @@ void kprint(char *s){
 int gettam_num(int64 num){
     int count = 0;
     if(num == 0)return 1;
+    if(num<0)num*=-1;
     while(num > 0){
         count++;
         num = num/10;
     }
-    while(num<0){
+    return count;
+}
+int gettam_hex(int64 num){
+    int count = 0;
+    if(num == 0)return 1;
+    if(num<0)num*=-1;
+    while(num > 0){
         count++;
-        num = num/10;
+        num = num/16;
     }
     return count;
 }
@@ -54,9 +61,36 @@ void int_asc(int64 number, char *numberArray){
         numberArray[i+neg] = '0' + number % 10;
     }
 }
+void hex_asc(int64 number, char *numberArray){
+    int n = gettam_hex(number);
+    int i=n-1;
+    char neg =0;
+    if(number<0){
+        numberArray[0]='-';
+        neg=1;
+        number*=-1;
+    }
+    numberArray[n+neg+2]='\0';
+    numberArray[0]='0';
+    numberArray[1]='x';
+    for (; i >= 0; --i, number /= 16 ){
+        char a = number % 16;
+        if(a>9){
+            a = 'A'+(a-10);
+        }else{
+            a = '0'+a;
+        }
+        numberArray[i+neg+2] = a;
+    }
+}
 void kprintnum(int a,int b,int64 x){
     char c[21];
     int_asc(x, c);
+    kprintStr(a,b,c,0x0f);
+}
+void kprinthex(int a,int b,int64 x){
+    char c[21];
+    hex_asc(x, c);
     kprintStr(a,b,c,0x0f);
 }
 void kprintnum2(int64 x){

@@ -13,6 +13,7 @@
         void kprintChar(int x,int y,char c,int8 color);
         void kprintStr(int x,int y,char *s,int8 color);
         void kprintnum(int x,int y,int64 val);
+        void kprinthex(int x,int y,int64 val);
 
         extern void kprintnum2(int64 x);
 
