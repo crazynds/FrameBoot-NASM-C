@@ -4,5 +4,5 @@
 
 void main(){
 
-  kprintStr(1,20,"USUARIO PROGRAMA",0x0F);
+  kprintStr(1,20,"USUARIO PROGRAMA",0x2F);
 }
