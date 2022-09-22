@@ -3,5 +3,6 @@
 
 
     void setupPagination();
+    void setupGDT();
 
 #endif
