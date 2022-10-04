@@ -4,5 +4,6 @@
 
     void setupPagination();
     void setupGDT();
+    void setupProcess();
 
 #endif
