@@ -10,7 +10,7 @@
 uint64 NEXT_PAGING_KERNEL=REAL_PAG_MEM;
 
 uint64* getAddrMem(uint64 v){
-    return (uint64*)((((v)>>11)<<11));
+    return (uint64*)(v&(~0x7ff));
 }
 
 uint64 getNextPagingKernel(){
@@ -92,6 +92,13 @@ uint64 loadMemoryInformation(){
     uint64 maxMemory = 0x100000;
 
     for(int x=0;mem->size!=0;x++){
+        
+        kprintStr(1,10+x,"Memoria",0x0f);
+
+        kprinthex(15,10+x,mem->base);
+        kprinthex(30,10+x,mem->size);
+        kprintnum(45,10+x,mem->type);
+        kprintnum(60,10+x,mem->extendedAtb);
         if(mem->type==1 && mem->base>=100000){
             if(mem->base+mem->size>maxMemory)maxMemory= mem->base+mem->size;
             //addMemoryEntry(mem->base,mem->size);

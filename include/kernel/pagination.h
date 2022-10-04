@@ -1,5 +1,5 @@
 #ifndef PAGINATION_H
-    #define PAGITAION_H
+    #define PAGINATION_H
 
     #include <stdvar.h>
 
