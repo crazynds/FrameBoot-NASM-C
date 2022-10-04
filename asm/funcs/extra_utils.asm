@@ -1,3 +1,5 @@
+[64 bits]
+section .text
 
 [global sleep]
 [global outb]
@@ -5,6 +7,7 @@
 [global gdt_fluh]
 [global yield]
 [global tss_flush]
+[global __stack_chk_fail]
 
 tss_flush:
     mov ax, 0x2B
@@ -50,4 +53,8 @@ inb:
 yield:
     int 0x70
     ret
+
+__stack_chk_fail:
+    hlt
+    jmp __stack_chk_fail
 

@@ -14,7 +14,7 @@ SECTIONS
     *(.rodata)
     . = ALIGN(4096);
   }
-/* Endereco fisico onde o Dado sera alocado */
+/* Endereco fisico onde os Dados serão alocados */
   .data : AT(phys + (data - code))
   {
     data = .;

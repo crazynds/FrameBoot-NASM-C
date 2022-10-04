@@ -1,14 +1,10 @@
-
 [bits 64]
-%include "asm/funcs/start_kernel.asm"
 
-%include "asm/funcs/macros.asm"
-%include "asm/funcs/extra_utils.asm"
+section .text
 
 [extern kmain]
 [extern kloop]
 
-[global __stack_chk_fail]
 
 start_64:
     sti
@@ -23,7 +19,4 @@ start_64:
     jmp .helt
 
 
-__stack_chk_fail:
-    hlt
-    jmp __stack_chk_fail
 
