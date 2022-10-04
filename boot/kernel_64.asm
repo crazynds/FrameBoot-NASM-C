@@ -109,9 +109,7 @@ SwitchToLongMode:
     lgdt [GDT.Pointer]                ; Load GDT.Pointer defined below.
 
 
-    jmp 0x8:INI_KERNEL             ; Load CS with 64 bit segment and flush the instruction cache
-
-
+    jmp GDT.Code:INI_KERNEL             ; Load CS with 64 bit segment and flush the instruction cache
 
 
 ;Print:

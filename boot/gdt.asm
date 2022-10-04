@@ -6,7 +6,7 @@ GDT:
 .Null:
     ; Null Descriptor - should be present.
     dq 0
-.Code:
+.Code: equ $ - GDT
     ; 64-bit code descriptor (exec/read).
     dq (1<<43)|(1<<44)|(1<<47)|(1<<53)|(1<<41)
 .Data:
