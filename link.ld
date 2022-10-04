@@ -10,6 +10,7 @@ SECTIONS
 {
   .text phys : AT(phys) {
     code = .;
+    *(.entry)
     *(.text)
     *(.rodata)
     . = ALIGN(4096);

@@ -1,6 +1,7 @@
 [bits 64]
-section .text
+section .entry
 
+[extern start_64]
 
 global _start
 _start:

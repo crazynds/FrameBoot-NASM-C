@@ -1,4 +1,4 @@
-[64 bits]
+[bits 64]
 section .text
 
 [global sleep]

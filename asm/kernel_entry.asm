@@ -4,7 +4,7 @@ section .text
 
 [extern kmain]
 [extern kloop]
-
+[global start_64]
 
 start_64:
     sti
