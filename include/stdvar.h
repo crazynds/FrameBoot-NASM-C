@@ -18,6 +18,8 @@
     typedef int int32;
     typedef short int16;
     typedef char int8;
+
+    typedef uint32 size_t;
     
     typedef char boolean;
     

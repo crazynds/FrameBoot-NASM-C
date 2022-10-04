@@ -1,17 +1,27 @@
 #include <kernel/gfx.h>
 
-short *VGA_MEM=(short *)0xb8000;
+struct Char{
+    char c;
+    uint8 color;
+};
+
+static const size_t NUM_COLS = 80;
+static const size_t NUM_ROWS = 25;
+struct Char *VGA_MEM=(struct Char *)0xb8000;
 
 void clrscr(){
-    for ( int r = 0 ; r < 30 ; r++ ){
-        for ( int c = 0 ; c < 80 ; c++ ){
+    for ( size_t r = 0 ; r < NUM_ROWS ; r++ ){
+        for ( size_t c = 0 ; c < NUM_COLS ; c++ ){
             kprintChar(c, r, ' ',0x0F);
         }
     }
 }
 
 inline void kprintChar(int x,int y,char c,int8 color){
-    VGA_MEM[80*y+x]=c|(color<<8);
+    VGA_MEM[NUM_COLS*y+x]=(struct Char){
+        c,
+        color
+    };
 }
 
 void kprintStr(int x,int y,char *s,int8 color){
