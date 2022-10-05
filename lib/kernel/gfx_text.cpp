@@ -1,14 +1,31 @@
 #include <kernel/gfx.h>
+#include <io.h>
 
 struct Char{
     char c;
-    uint8 color;
+    int8 color;
 };
 
 static const size_t NUM_COLS = 80;
 static const size_t NUM_ROWS = 25;
 struct Char *VGA_MEM=(struct Char *)0xb8000;
 
+
+void setCursorPosition(uint16 position){
+    outb(0x0F,0x3D4);
+    outb((unsigned char)(position&0xff),0x3D5);
+    outb(0x0E,0x3D4);
+    outb((unsigned char)((position>>8)&0xff),0x3D5);
+}
+
+inline void kprintChar(int x,int y,char c,int8 color){
+    uint16 p = NUM_COLS*y+x;
+    VGA_MEM[p]=(struct Char){
+        c,
+        color
+    };
+    setCursorPosition(p+1);
+}
 void clrscr(){
     for ( size_t r = 0 ; r < NUM_ROWS ; r++ ){
         for ( size_t c = 0 ; c < NUM_COLS ; c++ ){
@@ -17,14 +34,7 @@ void clrscr(){
     }
 }
 
-inline void kprintChar(int x,int y,char c,int8 color){
-    VGA_MEM[NUM_COLS*y+x]=(struct Char){
-        c,
-        color
-    };
-}
-
-void kprintStr(int x,int y,char *s,int8 color){
+void kprintStr(int x,int y,const char *s,int8 color){
     while(*s!='\0'){
         kprintChar(x,y,*s,color);
         x++;

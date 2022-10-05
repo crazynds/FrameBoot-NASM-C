@@ -17,6 +17,15 @@
     #define REAL_PAG_MEM 0x100000
 
 
-    char *FAULT[8];
+    const char* FAULT[8] = {
+        "Supervisory process tried to read a non-present page entry",
+        "Supervisory process tried to read a page and caused a protection fault",
+        "Supervisory process tried to write to a non-present page entry",
+        "Supervisory process tried to write a page and caused a protection fault",
+        "User process tried to read a non-present page entry",
+        "User process tried to read a page and caused a protection fault",
+        "User process tried to write to a non-present page entry",
+        "User process tried to write a page and caused a protection fault",
+    };
 
 #endif

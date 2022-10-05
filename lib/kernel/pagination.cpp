@@ -71,24 +71,14 @@ void page_fault_handler(uint32 error,uint64 endereco){
     kprintnum(0,23,endereco);
 }
 
-void setFault(){
-    FAULT[0]="Supervisory process tried to read a non-present page entry";
-    FAULT[1]="Supervisory process tried to read a page and caused a protection fault";
-    FAULT[2]="Supervisory process tried to write to a non-present page entry";
-    FAULT[3]="Supervisory process tried to write a page and caused a protection fault";
-    FAULT[4]="User process tried to read a non-present page entry";
-    FAULT[5]="User process tried to read a page and caused a protection fault";
-    FAULT[6]="User process tried to write to a non-present page entry";
-    FAULT[7]="User process tried to write a page and caused a protection fault";
-}
 
 uint64 loadMemoryInformation(){
-    struct{
+    struct memory_map{
         uint64 base;
         uint64 size;
         uint32 type;
         uint32 extendedAtb;
-    }__attribute__((packed)) *mem = (void*)(0x7E000+24);
+    }__attribute__((packed)) *mem = (struct memory_map*)(0x7E000+24);
     uint64 maxMemory = 0x100000;
 
     for(int x=0;mem->size!=0;x++){
@@ -109,7 +99,6 @@ uint64 loadMemoryInformation(){
 }
 
 void setupPagination(){
-    setFault();
     uint64 maxMemory = loadMemoryInformation();
     
     uint64 base = getNextPagingKernel();

@@ -1,4 +1,4 @@
-HEADER=bin/all_src.c
+HEADER=bin/all_src.cpp
 
 rm $HEADER
 

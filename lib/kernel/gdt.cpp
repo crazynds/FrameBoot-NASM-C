@@ -24,7 +24,7 @@ typedef struct{
 
 static Gdt_pointer gdt;
 
-extern void gdt_fluh(Gdt_pointer *gdt);
+extern "C" void gdt_fluh(Gdt_pointer *gdt);
 
 uint32 val2=0;
 
