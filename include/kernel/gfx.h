@@ -49,8 +49,8 @@
         uint64 asc_int(char *numero);
 
         void clrscr(color c);
-        void kprintChar(int x,int y,char ch,color c);
-        void kprintStr(int x,int y,const char *s,color c);
+        extern "C" void kprintChar(int x,int y,char ch,color c);
+        extern "C" void kprintStr(int x,int y,const char *s,color c);
         void kprintnum(int x,int y,int64 val);
         void kprinthex(int x,int y,int64 val);
 

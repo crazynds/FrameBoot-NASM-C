@@ -14,5 +14,7 @@ extern "C" void kmain(void){
   kprintStr(0,y++,"Paginacao definida.",base);
   setupGDT();
   kprintStr(0,y++,"GDT definida.",base);
+  setupIDT();
+  kprintStr(0,y++,"IDT definida.",base);
   return main();
 }

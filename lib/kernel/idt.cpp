@@ -3,12 +3,12 @@
 #include <io.h>
 #include <System.h>
 
-#define IDT_INTERRUPT_GATE 0xee
+#define IDT_INTERRUPT_GATE 0x8e
 #define IDT_TRAP_GATE      0x8f
 #define IDT_TASK_GATE      0x85
 
 
-extern void idt_register_isrs();
+extern "C" void idt_register_isrs();
 
 typedef struct {
     uint16 offset_0_15;
@@ -27,9 +27,10 @@ typedef struct {
 } __attribute__((packed))
 idtr_t;
 
+static idtr_t descriptor;
 static idt_entry idt[256];
 
-void idt_set_interrupt_gate(uint8 vector, uint64 handler)
+extern "C" void idtSetInterruptGate(uint8 vector, uint64 handler)
 {
     idt[vector].offset_0_15 = handler;
     idt[vector].segment = 0x8;
@@ -39,7 +40,7 @@ void idt_set_interrupt_gate(uint8 vector, uint64 handler)
     idt[vector].offset_32_63 = handler >> 32;
     idt[vector]._reserved = 0;
 }
-void idt_set_trap_gate(uint8 vector, uint64 handler)
+extern "C" void idtSetTrapGate(uint8 vector, uint64 handler)
 {
     idt[vector].offset_0_15 = handler;
     idt[vector].segment = 0x8;
@@ -49,7 +50,7 @@ void idt_set_trap_gate(uint8 vector, uint64 handler)
     idt[vector].offset_32_63 = handler >> 32;
     idt[vector]._reserved = 0;
 }
-void idt_set_task_gate(uint8 vector, uint64 handler)
+extern "C" void idtSetTaskGate(uint8 vector, uint64 handler)
 {
     idt[vector].offset_0_15 = handler;
     idt[vector].segment = 0x8;
@@ -59,10 +60,10 @@ void idt_set_task_gate(uint8 vector, uint64 handler)
     idt[vector].offset_32_63 = handler >> 32;
     idt[vector]._reserved = 0;
 }
-static inline void stopInt(){
+static inline void stopInterruptions(){
     __asm__ ("cli");
 }
-static inline void startInt(){
+static inline void startInterruptions(){
     __asm__ ("sti");
 }
 
@@ -89,19 +90,23 @@ void setTimer(uint16 freq){
     outb(l, 0x40);
     outb(h, 0x40);
 }
-void idtInit(){
-    remap_irqs();
+void setupIDT(){
     memzero(idt, sizeof(idt_entry) * 256);
     idt_register_isrs();
-    idtr_t idtr = { .base = idt, .limit = sizeof(idt_entry) * 256 - 1 };
-    __asm__ volatile("lidt %0" :: "m"(idtr));
-
-    setTimer(60);
+    descriptor.limit = sizeof(idt_entry) * 256 - 1;
+    descriptor.base = idt;
+    kprintnum(15,4,sizeof(idt_entry));
+    outb(0xfd,0x21);
+    outb(0xff,0xa1);
+    __asm__ volatile("lidt %0" :: "m"(descriptor));
+    //remap_irqs();
+    
+    //setTimer(5);
     // 20 - 30 hz
-    disableCursor();
-    enableCursor (15,15);
-    setCursorPosition(0);
-
+    //disableCursor();
+    //enableCursor (15,15);
+    //setCursorPosition(0);
+    startInterruptions();
 }
 /*void enableIRQ(char port)
 {

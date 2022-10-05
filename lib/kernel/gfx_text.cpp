@@ -37,7 +37,7 @@ uint16 getCursorPosition(){
     return pos;
 }
 
-inline void kprintChar(int x,int y,char c,int8 color){
+extern "C" void kprintChar(int x,int y,char c,int8 color){
     uint16 p = NUM_COLS*y+x;
     VGA_MEM[p]=(struct Char){
         c,
@@ -53,7 +53,7 @@ void clrscr(color col){
     }
 }
 
-void kprintStr(int x,int y,const char *s,color col){
+extern "C" void kprintStr(int x,int y,const char *s,color col){
     x%=NUM_COLS;
     y%=NUM_ROWS;
     while(*s!='\0'){
@@ -74,10 +74,6 @@ void kprintStr(int x,int y,const char *s,color col){
         }
         s++;
     }
-}
-
-void kprint(char *s){
-    kprintStr(0,10,s,0x1f);
 }
 
 

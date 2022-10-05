@@ -7,8 +7,9 @@ section .text
 [global start_64]
 
 start_64:
-    sti
+    cli
     call kmain
+    jmp $
     ;jmp .helt
 .loop:
     ;mov byte [TIME_SLICE],1

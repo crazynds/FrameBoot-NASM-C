@@ -62,7 +62,8 @@ void setPaging(uint16 l4,uint16 l3,uint16 l2,uint16 l1,uint64 addr,uint16 flags,
         pageL1[l1+len]=(addr+0x1000*len)|flags;
     }
 }
-void page_fault_handler(uint32 error,uint64 endereco){
+
+extern "C" void pageFaultHandler(uint32 error,uint64 endereco){
     if(error&8){
         kprintStr(0,24,"Erro RSVD" ,0x4f);
     }else if(error&16){

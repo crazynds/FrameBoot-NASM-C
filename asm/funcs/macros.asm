@@ -1,3 +1,31 @@
+[extern idtSetInterruptGate]
+[extern kprintStr]
+
+%macro begin_isr 1
+    mov rdi, %1
+    mov rsi, isr_%1
+    call idtSetInterruptGate
+    jmp isr_%1.end
+    isr_%1:
+%endmacro
+
+%macro end_isr 0
+    iretq
+    .end:
+%endmacro
+
+%macro generic_exception 2
+    begin_isr %1
+        cli
+        mov rdi, 0
+        mov rsi, 24
+        mov rdx, .msg
+        mov rcx, 0x1f
+        call kprintStr
+        jmp $
+        .msg db %2, 0
+    end_isr
+%endmacro
 
 %macro pushaq 0
     push rax
