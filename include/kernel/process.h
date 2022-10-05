@@ -11,7 +11,6 @@
     };
 
 
-    struct process_state currentState;
 
 
 
