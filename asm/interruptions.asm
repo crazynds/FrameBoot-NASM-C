@@ -7,15 +7,6 @@ section .text
 [extern pageFaultHandler]
 [extern kprintChar]
 
-[global idt_default_handler]
-[extern defaultHandler]
-
-idt_default_handler:
-  pushall
-  call defaultHandler
-  popall
-  iretq
-
 idt_register_isrs:
   generic_exception 0,  "divide by zero"
   generic_exception 1,  "debug"
@@ -56,22 +47,22 @@ idt_register_isrs:
 
   ; IRQ 1 - keyboard
   begin_isr 33
-    ;pushall
+    pushall
 
-    ;in al,0x60
-    ;mov rdi,10
-    ;mov rsi,10
-    ;mov dl,al;
-    ;mov rcx,0x1f;
-    ;call kprintChar;
+    in al,0x60
+    mov rdi,10
+    mov rsi,10
+    mov dl,al;
+    mov rcx,0x1f;
+    call kprintChar;
 
-    ; push rax
-    ; mov al, 0x20
-    ; out 0xa0, al
-    ; out 0x20, al
-    ; pop rax;
+    push rax
+    mov al, 0x20
+    out 0xa0, al
+    out 0x20, al
+    pop rax;
 
-    ;popall
+    popall
   end_isr
 
   ret

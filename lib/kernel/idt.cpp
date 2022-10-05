@@ -83,7 +83,7 @@ void remap_irqs(){
 
 
 void setTimer(uint16 freq){
-    uint32 div=1193180/freq;
+    uint16 div=1193180/freq;
     uint8 l=(uint8)(div&0xff);
     uint8 h=(uint8)((div>>8)&0xff);
     outb(0x36, 0x43);
@@ -91,27 +91,15 @@ void setTimer(uint16 freq){
     outb(h, 0x40);
 }
 
-extern "C" void idt_default_handler();
-
-extern "C" void defaultHandler(){
-    
-}
-
 void setupIDT(){
+    remap_irqs();
     memzero(idt, sizeof(idt_entry) * 256);
-    //idt_register_isrs();
-    for(uint16 x=0;x<256;x++){
-        idtSetInterruptGate(x,(uint64)idt_default_handler);
-    }
+    idt_register_isrs();    
     descriptor.limit = sizeof(idt_entry) * 256 - 1;
     descriptor.base = idt;
-    outb(0xfd,0x21);
-    outb(0xff,0xa1);
     __asm__ volatile("lidt %0" :: "m"(descriptor));
-    //remap_irqs();
     
-    //setTimer(5);
-    // 20 - 30 hz
+    setTimer(20); // 20 ou 10
     //disableCursor();
     //enableCursor (15,15);
     //setCursorPosition(0);
