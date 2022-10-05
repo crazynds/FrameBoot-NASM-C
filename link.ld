@@ -12,13 +12,13 @@ SECTIONS
     code = .;
     *(.entry)
     *(.text)
-    *(.rodata)
     . = ALIGN(4096);
   }
 /* Endereco fisico onde os Dados serão alocados */
   .data : AT(phys + (data - code))
   {
     data = .;
+    *(.rodata)
     *(.data)
     . = ALIGN(4096);
   }
