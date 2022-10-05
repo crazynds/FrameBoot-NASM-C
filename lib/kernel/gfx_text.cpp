@@ -35,9 +35,24 @@ void clrscr(){
 }
 
 void kprintStr(int x,int y,const char *s,int8 color){
+    x%=NUM_COLS;
+    y%=NUM_ROWS;
     while(*s!='\0'){
-        kprintChar(x,y,*s,color);
-        x++;
+        if(*s=='\n'){
+            y+=1;
+            x=0;
+        }else{
+            kprintChar(x,y,*s,color);
+            x++;
+        }
+        if(x>=(int)NUM_COLS){
+            y++;
+            x%=NUM_COLS;
+        }
+        if(y>=(int)NUM_ROWS){
+            y%=NUM_ROWS;
+            x=0;
+        }
         s++;
     }
 }
