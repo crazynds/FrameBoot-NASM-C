@@ -26,15 +26,15 @@ inline void kprintChar(int x,int y,char c,int8 color){
     };
     setCursorPosition(p+1);
 }
-void clrscr(){
+void clrscr(color col){
     for ( size_t r = 0 ; r < NUM_ROWS ; r++ ){
         for ( size_t c = 0 ; c < NUM_COLS ; c++ ){
-            kprintChar(c, r, ' ',0x0F);
+            kprintChar(c, r, ' ',col);
         }
     }
 }
 
-void kprintStr(int x,int y,const char *s,int8 color){
+void kprintStr(int x,int y,const char *s,color col){
     x%=NUM_COLS;
     y%=NUM_ROWS;
     while(*s!='\0'){
@@ -42,7 +42,7 @@ void kprintStr(int x,int y,const char *s,int8 color){
             y+=1;
             x=0;
         }else{
-            kprintChar(x,y,*s,color);
+            kprintChar(x,y,*s,col);
             x++;
         }
         if(x>=(int)NUM_COLS){

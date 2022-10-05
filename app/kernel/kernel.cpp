@@ -7,11 +7,12 @@ void main();
 
 extern "C" void kmain(void){
   int y=2;
-  clrscr();
-  kprintStr(0,y++,"Kernel iniciado em 64bits        ",0x0F);
+  color base = BACKGROUND_BLACK|TEXT_WHITE;
+  clrscr(base);
+  kprintStr(0,y++,"Kernel iniciado em 64bits",base);
   setupPagination();
-  kprintStr(0,y++,"Paginacao definida.",0x0F);
+  kprintStr(0,y++,"Paginacao definida.",base);
   setupGDT();
-  kprintStr(0,y++,"GDT definida.",0x0F);
+  kprintStr(0,y++,"GDT definida.",base);
   return main();
 }

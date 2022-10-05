@@ -4,23 +4,43 @@
         #include <stdvar.h>
 
         enum {
-            COLOR_BLACK         = 0,
-            COLOR_BLUE          = 1,
-            COLOR_GREEN         = 2,
-            COLOR_CYAN          = 3,
-            COLOR_RED           = 4,
-            COLOR_MAGENTA       = 5,
-            COLOR_BROW          = 6,
-            COLOR_LIGHT_GRAY    = 7,
-            COLOR_DARK_GRAY     = 8,
-            COLOR_LIGHT_BLUE    = 9,
-            COLOR_LIGHT_GREEN   = 10,
-            COLOR_LIGHT_CYAN    = 11,
-            COLOR_LIGHT_RED     = 12,
-            COLOR_PINK          = 13,
-            COLOR_YELLOW        = 14,
-            COLOR_WHITE         = 15,
+            TEXT_BLACK         = 0,
+            TEXT_BLUE          = 1,
+            TEXT_GREEN         = 2,
+            TEXT_CYAN          = 3,
+            TEXT_RED           = 4,
+            TEXT_MAGENTA       = 5,
+            TEXT_BROW          = 6,
+            TEXT_LIGHT_GRAY    = 7,
+            TEXT_DARK_GRAY     = 8,
+            TEXT_LIGHT_BLUE    = 9,
+            TEXT_LIGHT_GREEN   = 10,
+            TEXT_LIGHT_CYAN    = 11,
+            TEXT_LIGHT_RED     = 12,
+            TEXT_PINK          = 13,
+            TEXT_YELLOW        = 14,
+            TEXT_WHITE         = 15,
         };
+        enum {
+            BACKGROUND_BLACK         = 0 << 4,
+            BACKGROUND_BLUE          = 1 << 4,
+            BACKGROUND_GREEN         = 2 << 4,
+            BACKGROUND_CYAN          = 3 << 4,
+            BACKGROUND_RED           = 4 << 4,
+            BACKGROUND_MAGENTA       = 5 << 4,
+            BACKGROUND_BROW          = 6 << 4,
+            BACKGROUND_LIGHT_GRAY    = 7 << 4,
+            BACKGROUND_DARK_GRAY     = 8 << 4,
+            BACKGROUND_LIGHT_BLUE    = 9 << 4,
+            BACKGROUND_LIGHT_GREEN   = 10 << 4,
+            BACKGROUND_LIGHT_CYAN    = 11 << 4,
+            BACKGROUND_LIGHT_RED     = 12 << 4,
+            BACKGROUND_PINK          = 13 << 4,
+            BACKGROUND_YELLOW        = 14 << 4,
+            BACKGROUND_WHITE         = 15 << 4,
+        };
+
+        typedef int8 color;
 
 
         //Utilitários para kprintnum
@@ -28,9 +48,9 @@
         int gettam_num(int64 num);
         uint64 asc_int(char *numero);
 
-        void clrscr();
-        void kprintChar(int x,int y,char c,int8 color);
-        void kprintStr(int x,int y,const char *s,int8 color);
+        void clrscr(color c);
+        void kprintChar(int x,int y,char ch,color c);
+        void kprintStr(int x,int y,const char *s,color c);
         void kprintnum(int x,int y,int64 val);
         void kprinthex(int x,int y,int64 val);
 
