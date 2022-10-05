@@ -11,11 +11,30 @@ static const size_t NUM_ROWS = 25;
 struct Char *VGA_MEM=(struct Char *)0xb8000;
 
 
+void disableCursor(){
+	outb(0x0A,0x3D4);
+	outb(0x20,0x3D5);
+}
+void enableCursor ( uint8 cursor_start ,  uint8 cursor_end ) {
+	outb ( 0x0A , 0x3D4 ) ;
+	outb ( ( inb ( 0x3D5 )  &  0xC0 )  | cursor_start , 0x3D5 ) ;
+
+	outb ( 0x0B , 0x3D4 ) ;
+	outb ( ( inb ( 0x3D5 )  &  0xE0 )  | cursor_end , 0x3D5 ) ;
+}
 void setCursorPosition(uint16 position){
     outb(0x0F,0x3D4);
     outb((unsigned char)(position&0xff),0x3D5);
     outb(0x0E,0x3D4);
     outb((unsigned char)((position>>8)&0xff),0x3D5);
+}
+uint16 getCursorPosition(){
+    uint16 pos = 0;
+    outb(0x0F,0x3D4);
+    pos |= inb(0x3D5);
+    outb(0x0E,0x3D4);
+    pos |= ((uint16)inb(0x3D5)) << 8;
+    return pos;
 }
 
 inline void kprintChar(int x,int y,char c,int8 color){

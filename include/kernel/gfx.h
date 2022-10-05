@@ -54,7 +54,9 @@
         void kprintnum(int x,int y,int64 val);
         void kprinthex(int x,int y,int64 val);
 
-        extern void kprintnum2(int64 x);
+        void disableCursor();
+        void enableCursor(uint8 cursor_start,uint8 cursor_end);
+        void setCursorPosition(uint16 position);
 
 
 #endif
