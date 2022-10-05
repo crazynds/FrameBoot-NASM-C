@@ -26,22 +26,16 @@
 
     %include "boot/memory_maper.asm"
 
-    call ChangeA20  ;Ativa memoria alta
-    call CheckA20   ;Checa se memoria alta ta ativa
-
-    mov edi, 0x2000 ;Aonde vai começar o paginamento 16 kb aproximadamente para 2 MB
-    ;mov esp, INI_PILHA  ;Aonde vai começar a stack
-
+    ;Ativa memoria alta e checa se está ativa
+    %include "boot/a20_high_memory.asm"
     
-    %include "boot/kernel_64.asm"
+    mov edi, 0x2000 ;Aonde vai começar o paginamento 16 kb aproximadamente para 2 MB
 
-    ;jmp INI_KERNEL
-    ;;
+    %include "boot/kernel_64.asm"
 
 
 %include "boot/vars.asm"
 
-%include "boot/a20_high_memory.asm"
 %include "boot/gdt.asm"
 
 ; ADICIONAR A ASSINATURA DE BOOT

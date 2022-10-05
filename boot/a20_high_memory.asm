@@ -1,12 +1,6 @@
 [bits 16]
 
-WaitKBC:
-   mov cx,0ffffh
-   A20L:
-   in al,64h
-   test al,2
-   loopnz A20L
-ret
+
 
 ChangeA20:
    call WaitKBC
@@ -15,7 +9,18 @@ ChangeA20:
    call WaitKBC
    mov al,0dfh ; use 0dfh to enable and 0ddh to disable.
    out 60h,al
-ret
+   jmp CheckA20
+
+WaitKBC:
+   mov cx,0ffffh
+   A20L:
+   in al,64h
+   test al,2
+   loopnz A20L
+   ret
+
+A20_OFF: 
+    jnc $           ;Se não tiver, trava o computador
 
 CheckA20:
     clc
@@ -36,9 +41,5 @@ CheckA20:
     MOV [es:0],ah 
     POPF 
     JZ A20_OFF 
-    
     POP ds
-    RET
 
-A20_OFF: 
-    jnc $           ;Se não tiver, trava o computador
