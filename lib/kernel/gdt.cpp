@@ -18,11 +18,12 @@ typedef struct{
 
 typedef struct{
   uint16 size;
-  Gdt_entry vector[16];
+  Gdt_entry *vector;
 }__attribute__((packed)) Gdt_pointer;
 
 
 static Gdt_pointer gdt;
+static Gdt_entry entries[16]; 
 
 extern "C" void gdt_fluh(Gdt_pointer *gdt);
 
@@ -31,7 +32,6 @@ uint32 val2=0;
 uint32 addEntry(uint64 entry){
   gdt.size++;
   val2++;
-  //gdt.vector=realoca(gdt.vector,sizeof(Gdt_entry)*(gdt.size));
   gdt.vector[gdt.size-1].entry=entry;
   return &gdt.vector[gdt.size-1]-&gdt.vector[0];
 }
@@ -43,7 +43,7 @@ uint32 addEntryGDT(uint32 base, uint32 limit,uint16 acess,uint8 flags){
 
 void setupGDT(){
   gdt.size=0;
-  //gdt.vector=maloca(sizeof(Gdt_entry));
+  gdt.vector=&entries[0];
   addEntry(0);
   addEntry(BIT_SEGMENTO_CODIGO|BIT_PRIVILEGIO_KERNEL|FLAG_64_BITS);
   addEntry(BIT_SEGMENTO_DADOS|BIT_PRIVILEGIO_KERNEL);

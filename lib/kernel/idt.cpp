@@ -90,12 +90,21 @@ void setTimer(uint16 freq){
     outb(l, 0x40);
     outb(h, 0x40);
 }
+
+extern "C" void idt_default_handler();
+
+extern "C" void defaultHandler(){
+    
+}
+
 void setupIDT(){
     memzero(idt, sizeof(idt_entry) * 256);
-    idt_register_isrs();
+    //idt_register_isrs();
+    for(uint16 x=0;x<256;x++){
+        idtSetInterruptGate(x,(uint64)idt_default_handler);
+    }
     descriptor.limit = sizeof(idt_entry) * 256 - 1;
     descriptor.base = idt;
-    kprintnum(15,4,sizeof(idt_entry));
     outb(0xfd,0x21);
     outb(0xff,0xa1);
     __asm__ volatile("lidt %0" :: "m"(descriptor));
@@ -108,13 +117,3 @@ void setupIDT(){
     //setCursorPosition(0);
     startInterruptions();
 }
-/*void enableIRQ(char port)
-{
-    interrupt_gates=(port|(interrupt_gates^0xff))^0xff;
-    write_port(PIC1_DATA , interrupt_gates);
-}
-void disableIRQ(char port)
-{
-    interrupt_gates=(port^(interrupt_gates^0xff))^0xff;
-    write_port(PIC1_DATA , interrupt_gates);
-}*/

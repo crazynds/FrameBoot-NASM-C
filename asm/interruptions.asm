@@ -7,6 +7,14 @@ section .text
 [extern pageFaultHandler]
 [extern kprintChar]
 
+[global idt_default_handler]
+[extern defaultHandler]
+
+idt_default_handler:
+  pushall
+  call defaultHandler
+  popall
+  iretq
 
 idt_register_isrs:
   generic_exception 0,  "divide by zero"
