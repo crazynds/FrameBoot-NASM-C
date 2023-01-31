@@ -17,6 +17,7 @@
     #define REAL_PAG_MEM 0x100000
 
 
+
     const char* FAULT[8] = {
         "Supervisory process tried to read a non-present page entry",
         "Supervisory process tried to read a page and caused a protection fault",
@@ -26,6 +27,37 @@
         "User process tried to read a page and caused a protection fault",
         "User process tried to write to a non-present page entry",
         "User process tried to write a page and caused a protection fault",
+    };
+
+    struct memory_map{
+        uint64 base;
+        uint64 size;
+        uint32 type;
+        uint32 extendedAtb;
+    }__attribute__((packed));
+
+
+    struct page_table{
+        uint64 entries[512];
+    };
+
+    struct page_directory{
+        page_table *
+    }
+
+
+    class PaginationTable{
+    private:
+        uint64*** l4;
+    public:
+        // Paginate 4kb memory
+        void setPage(uint64 *virtualPage,uint64 *fisicalFrame,uint16 flags);
+
+        // Paginate 2mb memory
+        void setPageFlags(uint64 *virtualPage,uint16 flags);
+
+        void setDirectoryPage(uint64 *virtualPage,uint64 *fisicalFrame,uint16 flags);
+        void setDirectoryFlags(uint64 *virtualPage,uint16 flags);
     };
 
 #endif

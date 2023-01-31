@@ -2,16 +2,55 @@
 #include <kernel/gfx.h>
 
 #define KERNEL_PAGE_L4 ((uint64*)0x2000)
-#define KERNEL_PAGE_L3(P4) ((uint64*)(KERNEL_PAGE_L4[P4]&0xFFFFFFFFFFFFFE00))
-#define KERNEL_PAGE_L2(P4,P3) ((uint64*)(KERNEL_PAGE_L3(P4)[P3]&0xFFFFFFFFFFFFFE00))
-#define KERNEL_PAGE_L1(P4,P3,P2) ((uint64*)(KERNEL_PAGE_L2(P4,P3)[P2]&0xFFFFFFFFFFFFFE00))
-#define KERNEL_PAGE(P4,P3,P2,P1) ((uint64*)(KERNEL_PAGE_L1(P4,P3,P2)[P1]&0xFFFFFFFFFFFFFE00))
+
+inline uint64* getAddrMem(uint64 v){
+    return (uint64*)(v&(~0x7ff));
+}
+
+void PaginationTable::setPage(uint64 *virtualPage,uint64 *fisicalFrame,uint16 flags){
+    uint64 addr = (uint64)virtualPage >> 12;    // 48 bits of virtual address - 9 l4 - 9 l3 - 9 l2 - 9 entry - 12 frame bound
+    uint16 l1_idx = (uint16)(addr)&0x1FF;
+    uint16 l2_idx = (uint16)(addr >> 9)&0x1FF;
+    uint16 l3_idx = (uint16)(addr >> 18)&0x1FF;
+    uint16 l4_idx = (uint16)(addr >> 27)&0x1FF;
+
+    uint64 *l3 = getAddrMem(this->l4[l4_idx]);
+    uint64 *l2 = getAddrMem(l3[l3_idx]);
+    uint64 *l1 = getAddrMem(l2[l2_idx]);
+    
+    flags &= 0x1FF;
+    addr &= 0xFFFFFFFFFFFFFE00;
+    l1[l1_idx] = addr|flags;
+}
+void PaginationTable::setDirectoryPage(uint64 *virtualPage,uint64 *fisicalFrame,uint16 flags){
+    uint64 addr = (uint64)virtualPage >> 12;    // 48 bits of virtual address - 9 l4 - 9 l3 - 9 l2 - 9 entry - 12 frame bound
+    uint16 l2_idx = (uint16)(addr >> 9)&0x1FF;
+    uint16 l3_idx = (uint16)(addr >> 18)&0x1FF;
+    uint16 l4_idx = (uint16)(addr >> 27)&0x1FF;
+
+    uint64 *l3 = getAddrMem(this->l4[l4_idx]);
+    uint64 *l2 = getAddrMem(l3[l3_idx]);
+    uint64 *l1 = getAddrMem(l2[l2_idx]);
+    
+    flags &= 0x1FF;
+    addr &= 0xFFFFFFFFFFFFFE00;
+    for(int x=0;x<512;x++){
+        l1[x] = (addr+x*0x1000)|flags;
+    }
+}
+void PaginationTable::setPageFlags(uint64 *virtualPage,uint16 flags){
+
+}
+void PaginationTable::setDirectoryFlags(uint64 *virtualPage,uint16 flags){
+
+}
+
+
+
+
 
 uint64 NEXT_PAGING_KERNEL=REAL_PAG_MEM;
 
-uint64* getAddrMem(uint64 v){
-    return (uint64*)(v&(~0x7ff));
-}
 
 uint64 getNextPagingKernel(){
     uint64 aux = (uint64)NEXT_PAGING_KERNEL;
@@ -74,12 +113,7 @@ extern "C" void pageFaultHandler(uint32 error,uint64 endereco){
 
 
 uint64 loadMemoryInformation(){
-    struct memory_map{
-        uint64 base;
-        uint64 size;
-        uint32 type;
-        uint32 extendedAtb;
-    }__attribute__((packed)) *mem = (struct memory_map*)(0x7E000+24);
+    struct memory_map *mem = (struct memory_map*)(0x7E000+24);
     uint64 maxMemory = 0x100000;
 
     for(int x=0;mem->size!=0;x++){

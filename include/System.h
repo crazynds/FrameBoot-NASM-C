@@ -3,7 +3,6 @@
 
     #include <stdvar.h>
 
-    void yield();
 
     void memzero(void* ptr, size_t size);
     

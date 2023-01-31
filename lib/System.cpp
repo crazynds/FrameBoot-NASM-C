@@ -15,3 +15,7 @@ void memzero(void* ptr, size_t size){
         }
     }
 }
+
+void yield(){
+    // do nothing
+}

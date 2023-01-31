@@ -1,5 +1,6 @@
 asm_source_files := $(shell find asm -name *.asm)
 asm_object_files := $(patsubst asm/%.asm, bin/asm/%.o,$(asm_source_files))
+GCC_FLAGS=-m64 -ffreestanding -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs -Wunused-variable -Wunused-function -I include
 
 all: bin/os-image iso
 	make test
@@ -26,9 +27,9 @@ $(asm_object_files): bin/asm/%.o : asm/%.asm
 	nasm -f elf64 $(patsubst bin/asm/%.o, asm/%.asm, $@) -o $@
 
 bin/kernel.bin: app/kernel/kernel.cpp app/app.cpp bin/all_src.cpp $(asm_object_files)
-	gcc -O2 -c app/kernel/kernel.cpp -o bin/kernel.o -m64 -ffreestanding -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs -Wunused-variable -Wunused-function -I include
-	gcc -O2 -c app/app.cpp -o bin/app.o -m64 -ffreestanding -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs -Wunused-variable -Wunused-function -I include
-	gcc -O2 -c bin/all_src.cpp -o bin/compiled.o -m64 -ffreestanding -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs -Wunused-variable -Wunused-function -I include
+	gcc -O2 -c app/kernel/kernel.cpp -o bin/kernel.o $(GCC_FLAGS)
+	gcc -O2 -c app/app.cpp -o bin/app.o $(GCC_FLAGS)
+	gcc -O2 -c bin/all_src.cpp -o bin/compiled.o $(GCC_FLAGS)
 	ld -e 0x7E00 -T link.ld -o bin/kernel.bin bin/app.o bin/kernel.o bin/compiled.o $(asm_object_files)
 
 bin/boot_sect.bin: boot/boot.asm bin

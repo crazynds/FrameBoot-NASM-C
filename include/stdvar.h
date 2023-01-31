@@ -1,10 +1,9 @@
 #ifndef VAR_H
     #define VAR_H
-    
-    #define NULL 0
 
-    #define true 1
-    #define false 0
+    #include <stdbool.h>
+
+    #define NULL 0
     
     #define KB 1024
     #define MB 1024*KB
@@ -19,8 +18,10 @@
     typedef short int16;
     typedef char int8;
 
-    typedef uint32 size_t;
-    
+    typedef uint64 size_t;
+    #define _HAVE_SIZE_T
+
+
     typedef char boolean;
     
     #define NULL 0

@@ -5,6 +5,8 @@ ENTRY(start)
 /* Endereco fisico onde o Kernel sera alocado */
 phys = 0X7E00;
 
+mem_dyn = 0x70000;
+
 /* Exposicoes ao ld */
 SECTIONS
 {
