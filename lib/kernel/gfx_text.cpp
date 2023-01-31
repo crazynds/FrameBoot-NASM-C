@@ -1,5 +1,5 @@
 #include <kernel/gfx.h>
-#include <io.h>
+#include <kernel/asmFunctions.hh>
 
 struct Char{
     char c;
@@ -12,27 +12,27 @@ struct Char *VGA_MEM=(struct Char *)0xb8000;
 
 
 void disableCursor(){
-	outb(0x0A,0x3D4);
-	outb(0x20,0x3D5);
+	outb(0x3D4,0x0A);
+	outb(0x3D5,0x20);
 }
 void enableCursor ( uint8 cursor_start ,  uint8 cursor_end ) {
-	outb ( 0x0A , 0x3D4 ) ;
-	outb ( ( inb ( 0x3D5 )  &  0xC0 )  | cursor_start , 0x3D5 ) ;
+	outb ( 0x3D4, 0x0A ) ;
+	outb ( 0x3D5, ( inb ( 0x3D5 )  &  0xC0 )  | cursor_start  ) ;
 
-	outb ( 0x0B , 0x3D4 ) ;
-	outb ( ( inb ( 0x3D5 )  &  0xE0 )  | cursor_end , 0x3D5 ) ;
+	outb ( 0x3D4, 0x0B ) ;
+	outb ( 0x3D5, ( inb ( 0x3D5 )  &  0xE0 )  | cursor_end  ) ;
 }
 void setCursorPosition(uint16 position){
-    outb(0x0F,0x3D4);
-    outb((unsigned char)(position&0xff),0x3D5);
-    outb(0x0E,0x3D4);
-    outb((unsigned char)((position>>8)&0xff),0x3D5);
+    outb(0x3D4,0x0F);
+    outb(0x3D5, (unsigned char)(position&0xff));
+    outb(0x3D4,0x0E);
+    outb(0x3D5, (unsigned char)((position>>8)&0xff));
 }
 uint16 getCursorPosition(){
     uint16 pos = 0;
-    outb(0x0F,0x3D4);
+    outb(0x3D4,0x0F);
     pos |= inb(0x3D5);
-    outb(0x0E,0x3D4);
+    outb(0x3D4,0x0E);
     pos |= ((uint16)inb(0x3D5)) << 8;
     return pos;
 }

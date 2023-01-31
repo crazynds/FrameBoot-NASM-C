@@ -10,5 +10,8 @@
     extern "C" void timer_handler(void);
     extern "C" uint64 get_idt(void);
     extern "C" void sleep(uint64);
+    
+    extern "C" void outb(uint16 port, uint8 value);
+    extern "C" uint8 inb(uint16 port);
 
 #endif
