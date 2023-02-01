@@ -7,12 +7,12 @@
 #include <stdlib.h>
 
 
-void *operator new(unsigned long int size)
+void *operator new(size_t size)
 {
     return malloc(size);
 }
 
-void *operator new[](unsigned long int size)
+void *operator new[](size_t size)
 {
     return malloc(size);
 }
@@ -21,7 +21,7 @@ void operator delete(void *p)
 {
     free(p);
 }
-void operator delete(void* p, long unsigned int)
+void operator delete(void* p, size_t)
 {
     free(p);
 }
@@ -30,7 +30,7 @@ void operator delete[](void *p)
 {
     free(p);
 }
-void operator delete [](void* p, long unsigned int)
+void operator delete [](void* p, size_t)
 {
     free(p);
 }

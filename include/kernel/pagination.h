@@ -37,18 +37,10 @@
     }__attribute__((packed));
 
 
-    struct page_table{
-        uint64 entries[512];
-    };
-
-    struct page_directory{
-        page_table *
-    }
-
 
     class PaginationTable{
     private:
-        uint64*** l4;
+        uint64* l4;
     public:
         // Paginate 4kb memory
         void setPage(uint64 *virtualPage,uint64 *fisicalFrame,uint16 flags);
