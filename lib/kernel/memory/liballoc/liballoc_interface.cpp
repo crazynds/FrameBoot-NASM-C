@@ -6,6 +6,10 @@ static uint16 lock = 0;
 extern "C" bool acquireLock(uint16*);
 extern "C" void releaseLock(uint16*);
 
+bool acquireLock(uint16*);
+void releaseLock(uint16*);
+
+
 
 int liballoc_lock(){
     return acquireLock(&lock);

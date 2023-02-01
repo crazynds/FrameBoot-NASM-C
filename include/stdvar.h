@@ -18,8 +18,11 @@
     typedef short int16;
     typedef char int8;
 
-    typedef uint64 size_t;
+    typedef unsigned long int  size_t;
     #define _HAVE_SIZE_T
+
+    typedef void* ptr_t;
+
 
 
     typedef char boolean;

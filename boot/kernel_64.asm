@@ -36,7 +36,7 @@ CheckCPU:
     ; Switch to Long Mode.
 
 ; es:edi    Should point to a valid page-aligned 16KiB buffer, for the PML4, PDPT, PD and a PT.
-; ss:esp    Should point to memory that can be used as a small (1 uint32_t) stack
+; ss:esp    Should point to memory that can be used as a small (1 uint64) stack
 SwitchToLongMode:
     ; Zero out the 16KiB buffer.
     ; Since we are doing a rep stosd, count should be bytes/4.

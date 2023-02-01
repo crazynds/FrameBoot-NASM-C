@@ -17,7 +17,7 @@ _start:
 
     ; Blank out the screen to a blue color.
     mov edi, 0xB8000
-    mov rcx, 500                      ; Since we are clearing uint64_t over here, we put the count as Count/4.
+    mov rcx, 500                      ; Since we are clearing uint64 over here, we put the count as Count/4.
     mov rax, 0x1F201F201F201F20       ; Set the value to set the screen to: Blue background, white foreground, blank spaces.
     rep stosq                         ; Clear the entire screen.
 
