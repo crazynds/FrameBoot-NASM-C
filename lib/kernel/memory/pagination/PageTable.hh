@@ -1,30 +1,8 @@
 #ifndef __PAGINATION_CLASSES_H
 #define __PAGINATION_CLASSES_H
-#include <stdvar.h>
 
-#define PAGE_SIZE 0x1000
-#define PAGE_MASK (~(PAGE_SIZE-1))
-
-#define RW (1<<1)
-#define PRESENT (1<<0)
-#define USER (1<<2)
-#define WRITE_THROUGH (1<<3)
-#define CACHE_DISABLED (1<<4)
-#define ACCESSED (1<<5)
-#define WRITTEN_IN (1<<5)
-#define PAGE_4MB_SIZED (1<<7)
-
-struct memory_space{
-    uint64 base;
-    uint64 size;
-};
-
-struct memory_map{
-    memory_space space;
-    uint32 type;
-    uint32 extendedAtb;
-}__attribute__((packed));
-
+#include "memory.h"
+#include "FrameManager.hh"
 
 class PaginationEntryInterface{
 private:
@@ -44,8 +22,8 @@ protected:
 
 public:
 
-    ptr_t getAddr(){
-        return (ptr_t)(entry&(PAGE_MASK));
+    uint64 getAddr(){
+        return (entry&(PAGE_MASK));
     }
 
     uint64 getValue(){
@@ -56,8 +34,7 @@ public:
         this->entry = obj.entry;
     }
 
-    void setAddr(ptr_t addr){
-        uint64 val = (uint64)addr;
+    void setAddr(uint64 val){
         val &= PAGE_MASK;
         this->entry &= 0xfff;
         this->entry |= val;
@@ -160,7 +137,6 @@ public:
 };
 class L2Directory: public PaginationEntryInterface{
 public:
-
     L1Table* getEntryTable(uint16 pos){
         return &((L1Table*)this->getAddr())[pos];
     }
@@ -171,6 +147,7 @@ public:
         return &((L2Directory*)this->getAddr())[pos];
     }
 };
+
 
 class PaginationTable{
 private:
@@ -189,7 +166,51 @@ public:
         return &pointer[pos];
     }
 
-    ptr_t getRealAddr(uint64 virt){
+    void remap(uint64 virtualAddr,uint64 realAddr, uint64 qtdPages){
+        virtualAddr >>= 12;
+        uint16 l1_idx = virtualAddr & 0x1FF;
+        virtualAddr >>= 9;
+        uint16 l2_idx = virtualAddr & 0x1FF;
+        virtualAddr >>= 9;
+        uint16 l3_idx = virtualAddr & 0x1FF;
+        virtualAddr >>= 9;
+        uint16 l4_idx = virtualAddr & 0x1FF;
+        
+        
+
+        for(uint64 count = 0;l4_idx < 512 && count < qtdPages; l4_idx++){
+            L3DirectoryTable* l3 = this->getEntryTable(l4_idx);
+            if(!l3->isPresent()){
+
+            }
+            for(;l3_idx < 512 && count < qtdPages; l3_idx++){
+                L2Directory* l2 = l3->getEntryTable(l3_idx);
+                if(!l2->isPresent()){
+
+                }
+                for(;l2_idx < 512 && count < qtdPages; l2_idx++){
+                    L1Table* l1 = l2->getEntryTable(l2_idx);
+                    if(!l1->isPresent()){
+
+                    }
+                    for(;l1_idx < 512 && count < qtdPages; l1_idx++){
+                        PageEntry* entry = l1->getEntryTable(l1_idx);
+                        entry->setPresent(true);
+                        entry->setCache(true);
+                        entry->setSuperuserSpace(true);
+                        entry->setWritable(true);
+                        entry->setWriteThrough(true);
+                        entry->setAddr(realAddr);
+                        realAddr+=PAGE_SIZE;
+                        qtdPages++;
+                    }
+                }
+            }
+        }
+
+    }
+
+    uint64 getRealAddr(uint64 virt){
         virt >>= 12;
         uint16 l1_idx = virt & 0x1FF;
         virt >>= 9;
@@ -207,5 +228,7 @@ public:
     }
 
 };
+
+static PaginationTable kernelPaginationTable;
 
 #endif
