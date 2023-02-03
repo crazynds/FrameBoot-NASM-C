@@ -3,13 +3,13 @@ section .text
 
 [global outb]
 [global inb]
-[global gdt_fluh]
+[global gdt_flush]
 [global __stack_chk_fail]
 [global acquireLock]
 [global releaseLock] 
 
 
-gdt_fluh:
+gdt_flush:
     lgdt [rdi]
     ret
 

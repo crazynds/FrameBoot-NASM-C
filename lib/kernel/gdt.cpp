@@ -25,7 +25,7 @@ typedef struct{
 static Gdt_pointer gdt;
 static Gdt_entry entries[16]; 
 
-extern "C" void gdt_fluh(Gdt_pointer *gdt);
+extern "C" void gdt_flush(Gdt_pointer *gdt);
 
 uint32 val2=0;
 
@@ -50,5 +50,5 @@ void setupGDT(){
   addEntry(BIT_SEGMENTO_CODIGO|BIT_PRIVILEGIO_USER|FLAG_64_BITS);
   addEntry(BIT_SEGMENTO_DADOS|BIT_PRIVILEGIO_USER);
   gdt.size=((gdt.size)*sizeof(Gdt_entry))-1;
-  gdt_fluh(&gdt);
+  gdt_flush(&gdt);
 }

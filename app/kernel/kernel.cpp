@@ -10,10 +10,10 @@ extern "C" void kmain(void){
   color base = BACKGROUND_BLACK|TEXT_WHITE;
   clrscr(base);
   kprintStr(0,y++,"Kernel iniciado em 64bits",base);
-  setupPagination();
-  kprintStr(0,y++,"Paginacao definida.",base);
   setupGDT();
   kprintStr(0,y++,"GDT definida.",base);
+  setupPagination();
+  kprintStr(0,y++,"Paginacao definida.",base);
   setupIDT();
   kprintStr(0,y++,"IDT definida.",base);
   return main();
