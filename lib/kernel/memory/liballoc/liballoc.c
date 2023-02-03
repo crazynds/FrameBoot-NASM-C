@@ -1,4 +1,5 @@
 #include "liballoc.h"
+#include "../pagination/memory.h"
 
 
 /**  Durand's Ridiculously Amazing Super Duper Memory functions.  */
@@ -31,7 +32,7 @@ unsigned int l_inuse = 0;			//< The amount of memory in use (malloc'ed).
 
 
 static int l_initialized = 0;			//< Flag to indicate initialization.	
-static const int l_pageSize  = 4096;			//< Individual page size
+static const int l_pageSize  = PAGE_SIZE;			//< Individual page size
 static const unsigned int l_pageCount = 16;			//< Minimum number of pages to allocate.
 
 
@@ -64,7 +65,7 @@ static inline int getexp( unsigned int size )
 	printf("getexp returns %i (%i bytes) for %i size\n", shift - 1, (1<<(shift -1)), size );
 	#endif
 
-	return shift - 1;	
+	return shift - 1;
 }
 
 
@@ -154,6 +155,8 @@ static inline void insert_tag( struct boundary_tag *tag, int index )
 	
 	if ( l_freePages[ realIndex ] != NULL ) 
 	{
+		tag->prev = l_freePages[ realIndex ]->prev;
+		if(tag->prev != NULL) tag->prev->next = tag;
 		l_freePages[ realIndex ]->prev = tag;
 		tag->next = l_freePages[ realIndex ];
 	}

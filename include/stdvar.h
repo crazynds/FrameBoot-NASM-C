@@ -5,10 +5,6 @@
 
     #define NULL 0
     
-    #define KB 1024
-    #define MB 1024*KB
-    #define GB 1024*MB
-    
     typedef unsigned long long int uint64;
     typedef unsigned int uint32;
     typedef unsigned short uint16;
@@ -28,5 +24,7 @@
     typedef char boolean;
     
     #define NULL 0
-
+    #define KB ((uint64)1024)
+    #define MB ((uint64)1024*KB)
+    #define GB ((uint64)1024*MB)
 #endif

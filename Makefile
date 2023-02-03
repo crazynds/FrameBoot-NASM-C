@@ -8,6 +8,7 @@ all: bin/os-image iso
 
 test: bin/os-image
 	qemu-system-x86_64 bin/os-image -m 128
+	make clean
 
 iso: bin/os-image
 	mkdir -p iso

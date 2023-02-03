@@ -4,27 +4,32 @@ ENTRY(start)
 
 /* Endereco fisico onde o Kernel sera alocado */
 phys = 0X7E00;
+VIRTUAL_OFFSET_ADDR = 0xFFFFFF8000000000;
+//VIRTUAL_OFFSET_ADDR = 0x8000000000;
+//VIRTUAL_OFFSET_ADDR = 0;
 
-mem_dyn = 0x70000;
+
+VIRTUAL_KERNEL_ADDR = phys + VIRTUAL_OFFSET_ADDR;
 
 /* Exposicoes ao ld */
 SECTIONS
 {
-  .text phys : AT(phys) {
+  .text VIRTUAL_KERNEL_ADDR : AT(VIRTUAL_KERNEL_ADDR) {
     code = .;
     *(.entry)
     *(.text)
     . = ALIGN(4096);
   }
-/* Endereco fisico onde os Dados serão alocados */
-  .data : AT(phys + (data - code))
+  .data : AT(VIRTUAL_KERNEL_ADDR + (data - code))
   {
     data = .;
     *(.rodata)
     *(.data)
     . = ALIGN(4096);
+    *(.stack)
+    . = ALIGN(4096);
   }
-  .bss : AT(phys + (bss - code))
+  .bss : AT(VIRTUAL_KERNEL_ADDR + (bss - code))
   {
     bss = .;
     *(.bss)

@@ -1,5 +1,7 @@
 #include "FrameManager.hh"
 
+extern "C" bool acquireLock(uint16*);
+extern "C" void releaseLock(uint16*);
 
 struct list_frame_t{
     memory_space data;
@@ -22,6 +24,13 @@ list_frame_t* list_push(list_frame_t *list,memory_space data){
     return list;
 }
 
+static FrameManager instance;
+
+
+FrameManager& FrameManager::getInstance(){
+    return instance;
+}
+
 
 bool FrameManager::loadBuffer(){
     while(qtd_buffer < MAX_BUFFER_FRAMES && this->avaliableMemory != nullptr){
@@ -32,7 +41,7 @@ bool FrameManager::loadBuffer(){
             delete this->avaliableMemory;
             this->avaliableMemory = next;
         }else{
-            this->addFrameInBuffer(space.base & PAGE_MASK);
+            this->addFrameInBuffer(space.base);
             space.base += PAGE_SIZE;
             space.size -= PAGE_SIZE;
         }
@@ -41,26 +50,29 @@ bool FrameManager::loadBuffer(){
 }
 
 void FrameManager::addFrameInBuffer(uint64 frame){
-    this->frame_buffer[this->qtd_buffer++] = frame;
+    this->frame_buffer[this->qtd_buffer++] = frame & PAGE_MASK;
 }
 
-void FrameManager::addMemoryMap(memory_space map){
-    if(map.size <= 0)return;
-    map.base = map.base & (~0xFFF);
+void FrameManager::addMemorySpace(memory_space map){
+    map.size = (map.size - (map.base & (~PAGE_MASK))) & PAGE_MASK;
+    map.base = map.base & PAGE_MASK;
+    while(map.size > PAGE_SIZE && this->qtd_buffer < MAX_BUFFER_FRAMES){
+        this->addFrameInBuffer(map.base);
+        map.base += PAGE_SIZE;
+        map.size -= PAGE_SIZE;
+    }
+    if(map.size < PAGE_SIZE)return;
     this->avaliableMemory = list_push(this->avaliableMemory,map);
 }
 
-ptr_t FrameManager::allocate(){
+uint64 FrameManager::allocate(){
+    acquireLock(&this->lock);
     if(this->qtd_buffer<=0 && !this->loadBuffer())
         return NULL;
-    return (ptr_t)this->frame_buffer[--this->qtd_buffer];
-}
+    uint64 frame = this->frame_buffer[--this->qtd_buffer];
 
-void FrameManager::free(ptr_t val){
-    uint64 frame = (uint64)val & (PAGE_MASK);
-    this->addMemoryMap({
-        frame, PAGE_SIZE
-    });
+    releaseLock(&this->lock);
+    return frame;
 }
 
 

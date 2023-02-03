@@ -52,7 +52,7 @@
         extern "C" void kprintChar(int x,int y,char ch,color c);
         extern "C" void kprintStr(int x,int y,const char *s,color c);
         void kprintnum(int x,int y,int64 val);
-        void kprinthex(int x,int y,int64 val);
+        void kprinthex(int x,int y,uint64 val);
 
         void disableCursor();
         void enableCursor(uint8 cursor_start,uint8 cursor_end);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdarg.h>
+#include <cdefs.h>
 #include <errno.h>
 
 

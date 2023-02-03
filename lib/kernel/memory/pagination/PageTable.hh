@@ -166,7 +166,7 @@ public:
         return &pointer[pos];
     }
 
-    void remap(uint64 virtualAddr,uint64 realAddr, uint64 qtdPages){
+    void unmap(uint64 virtualAddr,uint64 qtdPages){
         virtualAddr >>= 12;
         uint16 l1_idx = virtualAddr & 0x1FF;
         virtualAddr >>= 9;
@@ -175,23 +175,63 @@ public:
         uint16 l3_idx = virtualAddr & 0x1FF;
         virtualAddr >>= 9;
         uint16 l4_idx = virtualAddr & 0x1FF;
+        for(uint64 count = 0;l4_idx < 512 && count < qtdPages; l4_idx++){
+            L3DirectoryTable* l3 = this->getEntryTable(l4_idx);
+            for(;l3_idx < 512 && count < qtdPages; l3_idx++){
+                L2Directory* l2 = l3->getEntryTable(l3_idx);
+                for(;l2_idx < 512 && count < qtdPages; l2_idx++){
+                    L1Table* l1 = l2->getEntryTable(l2_idx);
+                    for(;l1_idx < 512 && count < qtdPages; l1_idx++){
+                        PageEntry* entry = l1->getEntryTable(l1_idx);
+
+                    }
+                }
+            }
+        }
+    }
+
+    void map(uint64 virtualAddr,uint64 realAddr, uint64 qtdPages){
+        virtualAddr >>= 12;
+        uint16 l1_idx = virtualAddr & 0x1FF;
+        virtualAddr >>= 9;
+        uint16 l2_idx = virtualAddr & 0x1FF;
+        virtualAddr >>= 9;
+        uint16 l3_idx = virtualAddr & 0x1FF;
+        virtualAddr >>= 9;
+        uint16 l4_idx = virtualAddr & 0x1FF;
+        FrameManager &fm = FrameManager::getInstance();
         
         
 
         for(uint64 count = 0;l4_idx < 512 && count < qtdPages; l4_idx++){
             L3DirectoryTable* l3 = this->getEntryTable(l4_idx);
             if(!l3->isPresent()){
-
+                l3->setAddr(fm.allocate());
+                l3->setPresent(true);
+                l3->setCache(true);
+                l3->setSuperuserSpace(true);
+                l3->setWritable(true);
+                l3->setWriteThrough(false);
             }
             for(;l3_idx < 512 && count < qtdPages; l3_idx++){
                 L2Directory* l2 = l3->getEntryTable(l3_idx);
                 if(!l2->isPresent()){
-
+                    l2->setAddr(fm.allocate());
+                    l2->setPresent(true);
+                    l2->setCache(true);
+                    l2->setSuperuserSpace(true);
+                    l2->setWritable(true);
+                    l2->setWriteThrough(false);
                 }
                 for(;l2_idx < 512 && count < qtdPages; l2_idx++){
                     L1Table* l1 = l2->getEntryTable(l2_idx);
                     if(!l1->isPresent()){
-
+                        l1->setAddr(fm.allocate());
+                        l1->setPresent(true);
+                        l1->setCache(true);
+                        l1->setSuperuserSpace(true);
+                        l1->setWritable(true);
+                        l1->setWriteThrough(false);
                     }
                     for(;l1_idx < 512 && count < qtdPages; l1_idx++){
                         PageEntry* entry = l1->getEntryTable(l1_idx);
@@ -199,7 +239,7 @@ public:
                         entry->setCache(true);
                         entry->setSuperuserSpace(true);
                         entry->setWritable(true);
-                        entry->setWriteThrough(true);
+                        entry->setWriteThrough(false);
                         entry->setAddr(realAddr);
                         realAddr+=PAGE_SIZE;
                         qtdPages++;
@@ -211,6 +251,7 @@ public:
     }
 
     uint64 getRealAddr(uint64 virt){
+        uint64 comp = virt & (~PAGE_MASK);
         virt >>= 12;
         uint16 l1_idx = virt & 0x1FF;
         virt >>= 9;
@@ -224,7 +265,7 @@ public:
         L2Directory* l2 = l3->getEntryTable(l3_idx);
         L1Table* l1 = l2->getEntryTable(l2_idx);
         PageEntry *entry = l1->getEntryTable(l1_idx);
-        return entry->getAddr();
+        return entry->getAddr() | comp;
     }
 
 };

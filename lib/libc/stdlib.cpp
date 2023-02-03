@@ -12,7 +12,7 @@ void* calloc(size_t size)
 }
 
 template <typename T>
-static char* int_to_string(T value, char* str, int base)
+char* int_to_string(T value, char* str, int base)
 {
     char* rc;
     char* ptr;

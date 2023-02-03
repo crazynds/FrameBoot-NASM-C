@@ -1,10 +1,16 @@
-[bits 64]
 section .entry
+[bits 64]
 
 [extern start_64]
 
 global _start
 _start:
+    ; Correct the kernel address to be ok
+    mov rax, _start.upper_memory
+    jmp rax
+    .upper_memory:
+
+    ; Make the basic setup for SO
     mov ax, 0x10
     mov ss, ax
     mov ds, ax
@@ -12,9 +18,10 @@ _start:
     mov fs, ax
     mov ds, ax
 
-    mov rbp,0x0900
+    mov rbp,stack.start
     mov rsp,rbp
 
+    
     ; Blank out the screen to a blue color.
     mov edi, 0xB8000
     mov rcx, 500                      ; Since we are clearing uint64 over here, we put the count as Count/4.
@@ -51,3 +58,11 @@ enable_sse:
     .end:
 
     ret
+
+
+section .stack
+
+stack:
+    .end:
+times 4096 db 0
+    .start:

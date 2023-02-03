@@ -7,7 +7,7 @@
 [bits 16]
 CheckCPU:
     ;checa se o cpuid é suportado
-    pushfd     
+    pushfd
     pop eax
     xor eax, 0x200000
     push eax
@@ -54,6 +54,7 @@ SwitchToLongMode:
     lea eax, [es:di + 0x1000]         ; Put the address of the Page Directory Pointer Table in to EAX.
     or eax, PAGE ; Or EAX with the flags - present flag, writable flag.
     mov [es:di], eax                  ; Store the value of EAX as the first PML4E.
+    mov [es:di + L4_PAGE_HIGH_KERNEL*8],eax
 
 
     ; Build the Page Directory Pointer Table.
@@ -109,7 +110,7 @@ SwitchToLongMode:
     lgdt [GDT.Pointer]                ; Load GDT.Pointer defined below.
 
 
-    jmp GDT.Code:INI_KERNEL             ; Load CS with 64 bit segment and flush the instruction cache
+    jmp GDT.Code:INI_KERNEL           ; Load CS with 64 bit segment and flush the instruction cache
 
 
 ;Print:

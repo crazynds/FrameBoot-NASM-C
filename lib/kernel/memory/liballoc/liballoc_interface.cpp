@@ -1,5 +1,7 @@
 
 #include <stdvar.h>
+#include <kernel/gfx.h>
+#include "../pagination/FrameManager.hh"
 
 static uint16 lock = 0;
 
@@ -21,9 +23,20 @@ int liballoc_unlock(){
 }
 
 void* liballoc_alloc(int){
-    return NULL;
+    kprintStr(20,0,"TENTATIVA DE ALOC",BACKGROUND_BLACK|TEXT_WHITE);
+    FrameManager& fm = FrameManager::getInstance();
+    uint64 val = fm.allocate();
+    kprinthex(20,1,val);
+    kprinthex(35,1,(uint64)&val);
+    kprinthex(50,1,(uint64)liballoc_alloc);
+    while (true);
+    
+    return (ptr_t)val;
 }
 
-int liballoc_free(void*,int){
+int liballoc_free(void* ptr,int pages){
+    FrameManager& fm = FrameManager::getInstance();
+    memory_space space = {(uint64)ptr,PAGE_SIZE*pages};
+    fm.addMemorySpace(space);
     return 0;
 }

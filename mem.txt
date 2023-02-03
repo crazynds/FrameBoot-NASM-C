@@ -8,8 +8,7 @@ timer_count = 0x7C04 = 64 bits - Timer
 Disco do boot = 0x7DFC = 8 bits - 10 Bytes
 
 
-PILHA KERNEL =0x0900 -> 0x01FFF
-PAGINACAO BASE=0x02000 -> 0x7000
+PAGINACAO BASE=0x02000 -> 0x07000
 L4(0) = 0x2000
 L3(0) = 0x3000
 L2(0) = 0X4000
