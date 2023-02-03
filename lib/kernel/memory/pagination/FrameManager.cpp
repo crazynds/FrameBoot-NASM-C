@@ -26,9 +26,8 @@ list_frame_t* list_push(list_frame_t *list,memory_space data){
 bool FrameManager::loadBuffer(){
     while(qtd_buffer < MAX_BUFFER_FRAMES && this->avaliableMemory != nullptr){
         memory_space space = this->avaliableMemory->data;
-        uint64 qtdFrames = space.size/PAGE_SIZE;
 
-        if(qtdFrames == 0){
+        if(space.size < PAGE_SIZE){
             list_frame_t *next = this->avaliableMemory->next;
             delete this->avaliableMemory;
             this->avaliableMemory = next;
