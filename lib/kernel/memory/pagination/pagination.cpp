@@ -76,15 +76,4 @@ void setupPagination(){
     uint64 base = (NEXT_PAGING_KERNEL + p++ * 0x1000);
     L3DirectoryTable *l3 = kernelPaginationTable.getEntryTable(0);
     l3->setPresent(false);
-    uint64 realAddr = kernelPaginationTable.getRealAddr((uint64)setupPagination);
-    //kprinthex(20,20,realAddr);
-    //kprintnum(20,20,15);
-    while(true);
-    kprinthex(20,19,(uint64)VGA_ADDRESS);
-    while(true);
-    kprinthex(20,20,kernelPaginationTable.getRealAddr((uint64)setupPagination));
-    kprinthex(20,21,(uint64)setupPagination);
-    kprinthex(20,22,(uint64)&NEXT_PAGING_KERNEL);
-    while(true);
-
 }
