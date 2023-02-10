@@ -15,8 +15,11 @@ _start:
     mov ss, ax
     mov ds, ax
     mov es, ax
-    mov fs, ax
     mov ds, ax
+
+    xor eax,eax
+    mov fs, eax
+    mov gs, eax
 
     mov rbp,stack.start
     mov rsp,rbp

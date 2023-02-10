@@ -1,6 +1,7 @@
 #include <kernel/gfx.h>
 #include <kernel/asmFunctions.hh>
 #include <kernel/address.h>
+#include <stdlib.h>
 
 struct Char{
     char c;
@@ -10,9 +11,6 @@ struct Char{
 static const size_t NUM_COLS = 80;
 static const size_t NUM_ROWS = 25;
 struct Char *VGA_MEM=(struct Char *)VGA_ADDRESS;
-
-template <typename T>
-char* int_to_string(T value, char* str, int base);
 
 
 void disableCursor(){
@@ -82,22 +80,22 @@ extern "C" void kprintStr(int x,int y,const char *s,color col){
 
 void kprintnum(int a,int b,int64 x){
     char c[40];
-    int_to_string<int64>(x,c,10);
+    ltoa(x,c,10);
     kprintStr(a,b,c,0x0f);
 }
 void kprinthex(int a,int b,uint64 x){
     char c[40] = {'0','x','0'};
-    int_to_string<uint64>(x,c+2,16);
+    ultoa(x,c+2,16);
     kprintStr(a,b,c,0x0f);
 }
 void kprintnum2(int64 x){
     char c[40];
-    int_to_string<int64>(x,c,10);
+    ltoa(x,c,10);
     kprintStr(70,0,c,0x0f);
 }
 uint8 val=0;
 void kprintnum3(int64 x){
     char c[40];
-    int_to_string<int64>(x,c,10);
+    ltoa(x,c,10);
     kprintStr(6,7+val++,c,0x0f);
 }

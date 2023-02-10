@@ -1,10 +1,14 @@
 asm_source_files := $(shell find asm -name *.asm)
 asm_object_files := $(patsubst asm/%.asm, bin/asm/%.o,$(asm_source_files))
-GCC_FLAGS=-O2 -c -m64 -ffreestanding -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs -Wunused-variable -Wunused-function -I include
+GCC_FLAGS=-O1 -g2 -c -m64 -ffreestanding -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs -Wunused-variable -Wunused-function -I include
 
-all: bin/os-image iso
-	make test
+all: bin/os-image
+	make debug
 	make clean
+
+debug: bin/os-image
+	qemu-system-x86_64 -s -S bin/os-image -m 128
+	
 
 test: bin/os-image
 	qemu-system-x86_64 bin/os-image -m 128
@@ -31,7 +35,8 @@ bin/kernel.bin: app/kernel/kernel.cpp app/app.cpp bin/all_src.cpp $(asm_object_f
 	g++ $(GCC_FLAGS) app/kernel/kernel.cpp -o bin/kernel.o 
 	g++ $(GCC_FLAGS) app/app.cpp -o bin/app.o 
 	g++ $(GCC_FLAGS) bin/all_src.cpp -o bin/compiled.o
-	ld -e 0x7E00 -T link.ld -o bin/kernel.bin bin/app.o bin/kernel.o bin/compiled.o $(asm_object_files)
+	ld -e 0x7E00 -T link.ld -o bin/kernel.elf bin/app.o bin/kernel.o bin/compiled.o $(asm_object_files)
+	objcopy -O binary bin/kernel.elf bin/kernel.bin
 
 bin/boot_sect.bin: boot/boot.asm bin
 	nasm boot/boot.asm -o bin/boot_sect.bin

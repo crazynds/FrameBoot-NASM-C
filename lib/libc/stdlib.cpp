@@ -11,8 +11,7 @@ void* calloc(size_t size)
     return mem;
 }
 
-template <typename T>
-char* int_to_string(T value, char* str, int base)
+char* int_to_string(int64 value, char* str, int base)
 {
     char* rc;
     char* ptr;
@@ -26,7 +25,7 @@ char* int_to_string(T value, char* str, int base)
     }
     rc = ptr = str;
 
-    if(value < 0 && base == 10)
+    if(value < 0)
     {
         *ptr++ = '-';
     }
@@ -50,25 +49,59 @@ char* int_to_string(T value, char* str, int base)
 
     return rc;
 }
+char* unsigned_int_to_string(uint64 value, char* str, int base)
+{
+    char* rc;
+    char* ptr;
+    char* low;
+
+    if(base < 2 || base > 36)
+    {
+        *str = '\0';
+
+        return str;
+    }
+    rc = ptr = str;
+
+
+    low = ptr;
+    do
+    {
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + value % base];
+        value /= base;
+    }
+    while(value);
+
+    *ptr-- = '\0';
+
+    while(low < ptr)
+    {
+        char tmp = *low;
+        *low++ = *ptr;
+        *ptr-- = tmp;
+    }
+
+    return rc;
+}
 
 char* ltoa(int64 value, char* str, int base)
 {
-    return int_to_string<int64>(value, str, base);
+    return int_to_string(value, str, base);
 }
 
 char* ultoa(uint64 value, char* str, int base)
 {
-    return int_to_string<uint64>(value, str, base);
+    return unsigned_int_to_string(value, str, base);
 }
 
-char* utoa(uint64 value, char* str, int base)
+char* utoa(uint32 value, char* str, int base)
 {
-    return int_to_string<uint64>(value, str, base);
+    return unsigned_int_to_string(value, str, base);
 }
 
 char* itoa(int value, char* str, int base)
 {
-    return int_to_string<int>(value, str, base);
+    return int_to_string(value, str, base);
 }
 
 template <typename T>
@@ -125,13 +158,6 @@ int atoi(const char* str)
     return string_to_int<int>(str, nullptr, 10);
 }
 
-#ifndef BUILD_DISABLE_FPA
-
-void ftoa(float, char*, int)
-{
-
-}
-
 double pow(double x, double y)
 {
     double result = x;
@@ -143,8 +169,6 @@ double pow(double x, double y)
 
     return result;
 }
-
-#endif
 
 int abs(int i)
 {

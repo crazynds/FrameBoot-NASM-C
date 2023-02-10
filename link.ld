@@ -1,6 +1,6 @@
-OUTPUT_FORMAT("binary")
+OUTPUT_FORMAT("elf64-x86-64")
 
-ENTRY(start)
+ENTRY(_start)
 
 /* Endereco fisico onde o Kernel sera alocado */
 phys = 0X7E00;

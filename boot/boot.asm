@@ -29,7 +29,7 @@
     ;Ativa memoria alta e checa se está ativa
     %include "boot/a20_high_memory.asm"
     
-    mov edi, 0x2000 ;Aonde vai começar o paginamento 16 kb aproximadamente para 2 MB
+    mov edi, INI_PAGIN ;Aonde vai começar o paginamento 16 kb aproximadamente para 2 MB
 
     %include "boot/kernel_64.asm"
 

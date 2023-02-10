@@ -8,12 +8,14 @@ timer_count = 0x7C04 = 64 bits - Timer
 Disco do boot = 0x7DFC = 8 bits - 10 Bytes
 
 
-PAGINACAO BASE=0x02000 -> 0x07000
-L4(0) = 0x2000
-L3(0) = 0x3000
-L2(0) = 0X4000
-L1(0) = 0x5000 0x0000 -> 0x
-L1(1) = 0x6000
+PAGINACAO BASE=0x01000 -> 0x07000
+L4(0) = 0x1000
+L3(0) = 0x2000
+L2(0) = 0X3000
+L1(0)(0) = 0x4000 0x0000 -> 0x20000
+L2(511) = 0x5000
+L1(511)(0) = 0x6000
+Sobra (0x5000,0x6000)
 KERNEL_CODE=0x7E00 -> 0x7DFFF ~ 416Kb
 MEMORY MAP = 0x7E000 -> 0x7FFFF
 PAGINACAO ADICIONAL KERNEL =0x100000 -> 0x200000 256 paginas novas (para o kernel)

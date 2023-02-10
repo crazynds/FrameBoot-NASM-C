@@ -5,9 +5,14 @@ section .text
 [global inb]
 [global gdt_flush]
 [global __stack_chk_fail]
+[global flush_tlb_address]
 [global acquireLock]
 [global releaseLock] 
 
+
+__stack_chk_fail:
+    hlt
+    jmp __stack_chk_fail
 
 gdt_flush:
     lgdt [rdi]
@@ -25,9 +30,9 @@ inb:
     in al,dx
     ret
 
-__stack_chk_fail:
-    hlt
-    jmp __stack_chk_fail
+flush_tlb_address:
+    invlpg [rdi]
+    ret
 
 acquireLock:
     lock bts word [rdi],0        ;Attempt to acquire the lock (in case lock is uncontended)

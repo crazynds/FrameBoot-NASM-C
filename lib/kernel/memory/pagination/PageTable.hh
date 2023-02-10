@@ -3,14 +3,18 @@
 
 #include "memory.h"
 #include "FrameManager.hh"
+#include <kernel/gfx.h>
+
+extern "C" void flush_tlb_address(ptr_t addr);
+
 
 class PaginationEntryInterface{
 private:
-    uint64 entry;
+    volatile uint64 entry;
 
 protected:
 
-    void setFlag(uint64 flag,bool seted){
+    inline void setFlag(uint64 flag,bool seted){
         if(seted){
             entry |= flag;
         }else{
@@ -21,6 +25,10 @@ protected:
     }
 
 public:
+
+    PaginationEntryInterface(uint64 val){
+        this->entry = val;
+    }
 
     uint64 getAddr(){
         return (entry&(PAGE_MASK));
@@ -34,7 +42,7 @@ public:
         this->entry = obj.entry;
     }
 
-    void setAddr(uint64 val){
+    inline void setAddr(uint64 val){
         val &= PAGE_MASK;
         this->entry &= 0xfff;
         this->entry |= val;
@@ -45,27 +53,27 @@ public:
         this->setFlag(WRITTEN_IN,false);
     }
 
-    void set4MBSized(bool value){
+    inline void set4MBSized(bool value){
         this->setFlag(PAGE_4MB_SIZED,value);
     }
-    void setWriteThrough(bool value){
+    inline void setWriteThrough(bool value){
         this->setFlag(WRITE_THROUGH,value);
     }
-    void setCache(bool value){
+    inline void setCache(bool value){
         this->setFlag(CACHE_DISABLED,!value);
     }
 
-    void setUserSpace(bool value){
+    inline void setUserSpace(bool value){
         this->setFlag(USER,value);
     }
-    void setSuperuserSpace(bool value){
+    inline void setSuperuserSpace(bool value){
         this->setUserSpace(!value);
     }
 
-    void setPresent(bool value){
+    inline void setPresent(bool value){
         this->setFlag(PRESENT,value);
     }
-    void setWritable(bool value){
+    inline void setWritable(bool value){
         this->setFlag(RW,value);
     }
 
@@ -148,124 +156,94 @@ public:
     }
 };
 
+enum PAGINATION_LEVEL{
+    L3,
+    L2,
+    L1,
+    PAGE
+};
+
 
 class PaginationTable{
 private:
-    L3DirectoryTable* pointer;
-public:
+    L3DirectoryTable* l4_pointer;
 
-    void setBasePointer(ptr_t pointer){
-        this->pointer = (L3DirectoryTable*)pointer;
+    PageEntry *entry;
+    ptr_t offset;
+
+    void lockEntry(){
+        entry->setPresent(true);
+        entry->setCache(true);
+        entry->setWritable(true);
+        entry->setWriteThrough(false);
+        entry->setSuperuserSpace(true);
     }
 
-    ptr_t getBasePointer(){
-        return this->pointer;
+    void unlockEntry(){
+        entry->setPresent(false);
+    }
+
+public:
+
+    void setVirtualSpace(ptr_t offset,ptr_t entry){
+        this->offset = offset;
+        this->entry = (PageEntry*)entry;
+    }
+
+    void setBasePointer(ptr_t l4_pointer){
+        this->l4_pointer = (L3DirectoryTable*)l4_pointer;
+    }
+
+    ptr_t getBasel4_pointer(){
+        return this->l4_pointer;
     }
 
     L3DirectoryTable* getEntryTable(uint16 pos){
-        return &pointer[pos];
+        return &l4_pointer[pos];
     }
-
-    void unmap(uint64 virtualAddr,uint64 qtdPages){
-        virtualAddr >>= 12;
-        uint16 l1_idx = virtualAddr & 0x1FF;
-        virtualAddr >>= 9;
-        uint16 l2_idx = virtualAddr & 0x1FF;
-        virtualAddr >>= 9;
-        uint16 l3_idx = virtualAddr & 0x1FF;
-        virtualAddr >>= 9;
-        uint16 l4_idx = virtualAddr & 0x1FF;
-        for(uint64 count = 0;l4_idx < 512 && count < qtdPages; l4_idx++){
-            L3DirectoryTable* l3 = this->getEntryTable(l4_idx);
-            for(;l3_idx < 512 && count < qtdPages; l3_idx++){
-                L2Directory* l2 = l3->getEntryTable(l3_idx);
-                for(;l2_idx < 512 && count < qtdPages; l2_idx++){
-                    L1Table* l1 = l2->getEntryTable(l2_idx);
-                    for(;l1_idx < 512 && count < qtdPages; l1_idx++){
-                        PageEntry* entry = l1->getEntryTable(l1_idx);
-
-                    }
-                }
-            }
+    PaginationEntryInterface* getEntryLevel(uint64 virt,PAGINATION_LEVEL level){
+        uint64 idx = 0;
+        ptr_t addr = 0;
+        PaginationEntryInterface *interface;
+        switch (level)
+        {
+        case L3:
+            idx = (virt >> (12+9*3)) & 0x1FF;
+            if(this->l4_pointer==NULL)return NULL;
+            addr = this->l4_pointer;
+            break;
+        case L2:
+            idx = (virt >> (12+9*2)) & 0x1FF;
+            interface = this->getEntryLevel(virt,L3);
+            if(interface==NULL || !interface->isPresent())return NULL;
+            addr = (ptr_t)interface->getAddr();
+            break;
+        case L1:
+            idx = (virt >> (12+9*1)) & 0x1FF;
+            interface = this->getEntryLevel(virt,L2);
+            if(interface==NULL || !interface->isPresent())return NULL;
+            addr = (ptr_t)interface->getAddr();
+            break;
+        case PAGE:
+        default:
+            idx = (virt >> (12)) & 0x1FF;
+            interface = this->getEntryLevel(virt,L1);
+            if(interface==NULL || !interface->isPresent())return NULL;
+            addr = (ptr_t)interface->getAddr();
+            break;
         }
-    }
-
-    void map(uint64 virtualAddr,uint64 realAddr, uint64 qtdPages){
-        virtualAddr >>= 12;
-        uint16 l1_idx = virtualAddr & 0x1FF;
-        virtualAddr >>= 9;
-        uint16 l2_idx = virtualAddr & 0x1FF;
-        virtualAddr >>= 9;
-        uint16 l3_idx = virtualAddr & 0x1FF;
-        virtualAddr >>= 9;
-        uint16 l4_idx = virtualAddr & 0x1FF;
-        FrameManager &fm = FrameManager::getInstance();
-        
-        
-
-        for(uint64 count = 0;l4_idx < 512 && count < qtdPages; l4_idx++){
-            L3DirectoryTable* l3 = this->getEntryTable(l4_idx);
-            if(!l3->isPresent()){
-                l3->setAddr(fm.allocate());
-                l3->setPresent(true);
-                l3->setCache(true);
-                l3->setSuperuserSpace(true);
-                l3->setWritable(true);
-                l3->setWriteThrough(false);
-            }
-            for(;l3_idx < 512 && count < qtdPages; l3_idx++){
-                L2Directory* l2 = l3->getEntryTable(l3_idx);
-                if(!l2->isPresent()){
-                    l2->setAddr(fm.allocate());
-                    l2->setPresent(true);
-                    l2->setCache(true);
-                    l2->setSuperuserSpace(true);
-                    l2->setWritable(true);
-                    l2->setWriteThrough(false);
-                }
-                for(;l2_idx < 512 && count < qtdPages; l2_idx++){
-                    L1Table* l1 = l2->getEntryTable(l2_idx);
-                    if(!l1->isPresent()){
-                        l1->setAddr(fm.allocate());
-                        l1->setPresent(true);
-                        l1->setCache(true);
-                        l1->setSuperuserSpace(true);
-                        l1->setWritable(true);
-                        l1->setWriteThrough(false);
-                    }
-                    for(;l1_idx < 512 && count < qtdPages; l1_idx++){
-                        PageEntry* entry = l1->getEntryTable(l1_idx);
-                        entry->setPresent(true);
-                        entry->setCache(true);
-                        entry->setSuperuserSpace(true);
-                        entry->setWritable(true);
-                        entry->setWriteThrough(false);
-                        entry->setAddr(realAddr);
-                        realAddr+=PAGE_SIZE;
-                        qtdPages++;
-                    }
-                }
-            }
-        }
-
+        entry->setAddr((uint64)addr);
+        flush_tlb_address(this->offset);
+        return &((PaginationEntryInterface*)this->offset)[idx];
     }
 
     uint64 getRealAddr(uint64 virt){
-        uint64 comp = virt & (~PAGE_MASK);
-        virt >>= 12;
-        uint16 l1_idx = virt & 0x1FF;
-        virt >>= 9;
-        uint16 l2_idx = virt & 0x1FF;
-        virt >>= 9;
-        uint16 l3_idx = virt & 0x1FF;
-        virt >>= 9;
-        uint16 l4_idx = virt & 0x1FF;
-        
-        L3DirectoryTable* l3 = this->getEntryTable(l4_idx);
-        L2Directory* l2 = l3->getEntryTable(l3_idx);
-        L1Table* l1 = l2->getEntryTable(l2_idx);
-        PageEntry *entry = l1->getEntryTable(l1_idx);
-        return entry->getAddr() | comp;
+        uint64 comp = virt & ~PAGE_MASK;
+        this->lockEntry();
+        PageEntry* entry = (PageEntry*)this->getEntryLevel(virt,PAGE);
+        uint64 addr = (entry->isPresent())?entry->getAddr()|comp:NULL;
+        this->unlockEntry();
+        return addr;
     }
 
 };

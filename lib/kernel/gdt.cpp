@@ -35,7 +35,7 @@ uint32 addEntry(uint64 entry){
   gdt.vector[gdt.size-1].entry=entry;
   return &gdt.vector[gdt.size-1]-&gdt.vector[0];
 }
-uint32 addEntryGDT(uint32 base, uint32 limit,uint16 acess,uint8 flags){
+uint32 addEntryGDT(uint64 base, uint32 limit,uint16 acess,uint8 flags){
   uint64 entry=(limit&0x0ffff)+((base&0x00ffffff)<<16)+((uint64)acess<<40)+(((uint64)limit&0xf0000)<<32)+(((uint64)flags&0x0f)<<52)+(((uint64)base&0xff000000)<<32);
   return addEntry(entry);
 }
