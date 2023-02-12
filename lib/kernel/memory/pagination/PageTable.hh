@@ -73,6 +73,9 @@ public:
     inline void setPresent(bool value){
         this->setFlag(PRESENT,value);
     }
+    inline void setGlobal(bool value){
+        this->setFlag(GLOBAL,value);
+    }
     inline void setWritable(bool value){
         this->setFlag(RW,value);
     }

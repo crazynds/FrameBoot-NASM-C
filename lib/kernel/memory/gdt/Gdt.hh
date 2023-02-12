@@ -34,7 +34,7 @@ private:
 
 public:
 
-  GDT();
+  void setup();
 
   uint32 addEntry(uint64 entry);
   uint32 addEntryGDT(uint32 base, uint32 limit,uint16 acess,uint8 flags);

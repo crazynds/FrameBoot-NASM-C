@@ -21,16 +21,15 @@ idt_register_isrs:
   generic_exception 11, "segment not present"
   generic_exception 12, "stack segment fault"
   generic_exception 13, "general protection fault"
-  generic_exception 14, "page fault"
   
 
   ; PAGE FAULT 14
-  ;begin_isr 14
-  ;  pushaq
-  ;  mov rsi,cr2
-  ;  call pageFaultHandler
-  ;  popaq
-  ;end_isr
+  begin_isr 14
+    pushaq
+    mov rsi,cr2
+    call pageFaultHandler
+    popaq
+  end_isr
 
   ; IRQ 0 - PIT
   begin_isr 32
@@ -48,7 +47,6 @@ idt_register_isrs:
   ; IRQ 1 - keyboard
   begin_isr 33
     pushall
-
     in al,0x60
     mov rdi,10
     mov rsi,10

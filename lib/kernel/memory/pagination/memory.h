@@ -15,6 +15,7 @@
 #define ACCESSED (1<<5)
 #define WRITTEN_IN (1<<5)
 #define PAGE_4MB_SIZED (1<<7)
+#define GLOBAL (1<<8)
 
 struct memory_space{
     uint64 base;

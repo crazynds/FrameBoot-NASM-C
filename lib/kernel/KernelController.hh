@@ -8,11 +8,8 @@
 class KernelController{
 private:
     GDT gdt;
-
     FrameAllocator frameAllocator;
     
-    std::vector<Process> processVector;
-
 public:
 
     FrameAllocator* getFrameAllocator(){

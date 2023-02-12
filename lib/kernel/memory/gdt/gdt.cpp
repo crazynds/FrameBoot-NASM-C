@@ -4,7 +4,7 @@
 
 extern "C" void gdt_flush(Gdt_pointer *gdt);
 
-GDT::GDT(){
+void GDT::setup(){
   this->gdt.vector = (Gdt_entry*)&entries;
   this->gdt.size = 0;
   this->size = 0;
@@ -13,7 +13,7 @@ GDT::GDT(){
 
 uint32 GDT::addEntry(uint64 entry){
   gdt.vector[this->size].entry=entry;
-  gdt.size = (this->size*sizeof(Gdt_entry))-1;
+  gdt.size = ((this->size+1)*sizeof(Gdt_entry))-1;
   return &gdt.vector[this->size++]-&gdt.vector[0];
 }
 uint32 GDT::addEntryGDT(uint32 base, uint32 limit,uint16 acess,uint8 flags){
@@ -26,6 +26,7 @@ Gdt_pointer* GDT::getPointer(){
 
 void setupGDT(KernelController *kernel){
   GDT *gdt = kernel->getGDT();
+  gdt->setup();
   gdt->addEntry(BIT_SEGMENTO_CODIGO|BIT_PRIVILEGIO_KERNEL|FLAG_64_BITS);
   gdt->addEntry(BIT_SEGMENTO_DADOS|BIT_PRIVILEGIO_KERNEL);
   gdt->addEntry(BIT_SEGMENTO_CODIGO|BIT_PRIVILEGIO_USER|FLAG_64_BITS);

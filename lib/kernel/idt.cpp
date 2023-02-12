@@ -100,7 +100,7 @@ void setupIDT(KernelController *){
     descriptor.base = idt;
     __asm__ volatile("lidt %0" :: "m"(descriptor));
     
-    setTimer(20); // 20 ou 10
+    //setTimer(20); // 20 ou 10
     //disableCursor();
     //enableCursor (15,15);
     //setCursorPosition(0);

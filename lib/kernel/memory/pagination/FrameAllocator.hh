@@ -27,8 +27,6 @@ public:
     uint64 allocate();
     void addMemorySpace(memory_space map);
 
-    static FrameAllocator& getInstance();
-
 };
 
 

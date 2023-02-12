@@ -24,13 +24,14 @@ extern "C" void pageFaultHandler(uint32 error,uint64 endereco){
         kprintStr(0,24,"Erro I/D" ,0x4f);
     }else kprintStr(0,24,FAULT[error&7],0x4f);
     kprintnum(0,23,endereco);
+    while(true);
 }
 
 
-uint64 loadMemoryInformation(){
+uint64 loadMemoryInformation(KernelController *kernel){
     struct memory_map *mem = (struct memory_map*)(0x7E000+24);
     uint64 maxMemory = 0;
-    FrameAllocator &frameAllocator = FrameAllocator::getInstance();
+    FrameAllocator* frameAllocator = kernel->getFrameAllocator();
 
     for(int x=0;mem->space.size!=0;x++){
         kprintStr(1,10+x,"Memoria",0x0f);
@@ -40,7 +41,7 @@ uint64 loadMemoryInformation(){
         kprintnum(60,10+x,mem->extendedAtb);
         if(mem->type==1 && mem->space.base>=0x100000){
             maxMemory+=mem->space.size&PAGE_MASK;
-            frameAllocator.addMemorySpace(mem->space);
+            frameAllocator->addMemorySpace(mem->space);
         }
         mem ++;
     }
@@ -49,22 +50,32 @@ uint64 loadMemoryInformation(){
 
 void prepareKernelPaginationTable(){
     L3DirectoryTable *l3 = (L3DirectoryTable*) L4_ADDR;
-    L2Directory *l2 = (L2Directory*) l3[511].getEntryTable(511);
-    l2->setAddr(0x5000);
-    l2->setPresent(true);
-    l2->setCache(false);
-    l2->setSuperuserSpace(true);
-    l2->setWritable(true);
-    l2->setWriteThrough(true);
-    L1Table *l1 = (L1Table*) l2->getEntryTable(0);
-    l1->setAddr(0x6000);
-    l1->setPresent(true);
-    l1->setCache(false);
-    l1->setSuperuserSpace(true);
-    l1->setWritable(true);
-    l1->setWriteThrough(true);
-    kernelPaginationTable.setBasePointer((ptr_t) L4_ADDR);
-    kernelPaginationTable.setVirtualSpace((ptr_t)PAGINATION_TEMP_OFFSET,(ptr_t)(KERNEL_OFFSET|0x6000));
+    l3 = &l3[510];
+    l3->setAddr(L4_ADDR);
+    l3->setSuperuserSpace(true);
+    l3->setCache(true);
+    l3->setWritable(true);
+    l3->setPresent(true);
+    l3->setGlobal(true);
+    l3->setWriteThrough(true);
+    
+
+    // L2Directory *l2 = (L2Directory*) l3[511].getEntryTable(511);
+    // l2->setAddr(0x5000);
+    // l2->setPresent(true);
+    // l2->setCache(false);
+    // l2->setSuperuserSpace(true);
+    // l2->setWritable(true);
+    // l2->setWriteThrough(true);
+    // L1Table *l1 = (L1Table*) l2->getEntryTable(0);
+    // l1->setAddr(0x6000);
+    // l1->setPresent(true);
+    // l1->setCache(false);
+    // l1->setSuperuserSpace(true);
+    // l1->setWritable(true);
+    // l1->setWriteThrough(true);
+    // kernelPaginationTable.setBasePointer((ptr_t) L4_ADDR);
+    // kernelPaginationTable.setVirtualSpace((ptr_t)PAGINATION_TEMP_OFFSET,(ptr_t)(KERNEL_OFFSET|0x6000));
 }
 
 
@@ -72,9 +83,9 @@ void setupPagination(KernelController *kernel){
     uint64 NEXT_PAGING_KERNEL=0x100000;
     uint64 p = 0;
     prepareKernelPaginationTable();
-    //uint64 maxMemory = loadMemoryInformation();
+    //uint64 maxMemory = loadMemoryInformation(kernel);
 
     uint64 base = (NEXT_PAGING_KERNEL + p++ * 0x1000);
     L3DirectoryTable *l3 = kernelPaginationTable.getEntryTable(0);
-    l3->setPresent(false);
+    //l3->setPresent(false);
 }

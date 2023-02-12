@@ -8,8 +8,8 @@ all: bin/os-image
 
 debug: bin/os-image
 	qemu-system-x86_64 -s -S bin/os-image -m 128
+	make clean
 	
-
 test: bin/os-image
 	qemu-system-x86_64 bin/os-image -m 128
 	make clean
