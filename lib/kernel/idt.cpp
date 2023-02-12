@@ -2,6 +2,7 @@
 #include <kernel/gfx.h>
 #include <kernel/asmFunctions.hh>
 #include <System.h>
+#include "KernelController.hh"
 
 #define IDT_INTERRUPT_GATE 0x8e
 #define IDT_TRAP_GATE      0x8f
@@ -91,7 +92,7 @@ void setTimer(uint16 freq){
     outb(0x40,h);
 }
 
-void setupIDT(){
+void setupIDT(KernelController *){
     remap_irqs();
     memzero(idt, sizeof(idt_entry) * 256);
     idt_register_isrs();    

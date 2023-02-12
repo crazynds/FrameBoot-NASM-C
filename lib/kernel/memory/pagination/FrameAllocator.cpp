@@ -1,4 +1,4 @@
-#include "FrameManager.hh"
+#include "FrameAllocator.hh"
 
 extern "C" bool acquireLock(uint16*);
 extern "C" void releaseLock(uint16*);
@@ -24,15 +24,15 @@ list_frame_t* list_push(list_frame_t *list,memory_space data){
     return list;
 }
 
-static FrameManager instance;
+static FrameAllocator instance;
 
 
-FrameManager& FrameManager::getInstance(){
+FrameAllocator& FrameAllocator::getInstance(){
     return instance;
 }
 
 
-bool FrameManager::loadBuffer(){
+bool FrameAllocator::loadBuffer(){
     while(qtd_buffer < MAX_BUFFER_FRAMES && this->avaliableMemory != nullptr){
         memory_space space = this->avaliableMemory->data;
 
@@ -49,11 +49,11 @@ bool FrameManager::loadBuffer(){
     return qtd_buffer>0;
 }
 
-void FrameManager::addFrameInBuffer(uint64 frame){
+void FrameAllocator::addFrameInBuffer(uint64 frame){
     this->frame_buffer[this->qtd_buffer++] = frame & PAGE_MASK;
 }
 
-void FrameManager::addMemorySpace(memory_space map){
+void FrameAllocator::addMemorySpace(memory_space map){
     map.size = (map.size - (map.base & (~PAGE_MASK))) & PAGE_MASK;
     map.base = map.base & PAGE_MASK;
     while(map.size > PAGE_SIZE && this->qtd_buffer < MAX_BUFFER_FRAMES){
@@ -65,7 +65,7 @@ void FrameManager::addMemorySpace(memory_space map){
     this->avaliableMemory = list_push(this->avaliableMemory,map);
 }
 
-uint64 FrameManager::allocate(){
+uint64 FrameAllocator::allocate(){
     acquireLock(&this->lock);
     if(this->qtd_buffer<=0 && !this->loadBuffer())
         return NULL;

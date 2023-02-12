@@ -10,7 +10,7 @@ typedef struct list_frame_t list_frame_t;
 list_frame_t* list_push(list_frame_t *list,memory_space data);
 
 
-class FrameManager{
+class FrameAllocator{
 private:
     uint16 lock = 0;
 
@@ -27,7 +27,7 @@ public:
     uint64 allocate();
     void addMemorySpace(memory_space map);
 
-    static FrameManager& getInstance();
+    static FrameAllocator& getInstance();
 
 };
 

@@ -2,7 +2,7 @@
 #define __PAGINATION_CLASSES_H
 
 #include "memory.h"
-#include "FrameManager.hh"
+#include "FrameAllocator.hh"
 #include <kernel/gfx.h>
 
 extern "C" void flush_tlb_address(ptr_t addr);

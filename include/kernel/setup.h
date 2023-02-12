@@ -1,10 +1,10 @@
 #ifndef KSETUP_H
     #define KSETUP_H
 
+    #include <kernel/class.h>
 
-    void setupPagination();
-    void setupGDT();
-    void setupIDT();
-    void setupProcess();
+    void setupPagination(KernelController *);
+    void setupGDT(KernelController *);
+    void setupIDT(KernelController *);
 
 #endif

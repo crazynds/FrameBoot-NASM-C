@@ -1,9 +1,10 @@
 #include <kernel/gfx.h>
 #include <stdvar.h>
 #include <kernel/address.h>
+#include "../../KernelController.hh"
 
 #include "PageTable.hh"
-#include "FrameManager.hh"
+#include "FrameAllocator.hh"
 
 const char* FAULT[8] = {
     "Supervisory process tried to read a non-present page entry",
@@ -29,7 +30,7 @@ extern "C" void pageFaultHandler(uint32 error,uint64 endereco){
 uint64 loadMemoryInformation(){
     struct memory_map *mem = (struct memory_map*)(0x7E000+24);
     uint64 maxMemory = 0;
-    FrameManager &frameManager = FrameManager::getInstance();
+    FrameAllocator &frameAllocator = FrameAllocator::getInstance();
 
     for(int x=0;mem->space.size!=0;x++){
         kprintStr(1,10+x,"Memoria",0x0f);
@@ -39,7 +40,7 @@ uint64 loadMemoryInformation(){
         kprintnum(60,10+x,mem->extendedAtb);
         if(mem->type==1 && mem->space.base>=0x100000){
             maxMemory+=mem->space.size&PAGE_MASK;
-            frameManager.addMemorySpace(mem->space);
+            frameAllocator.addMemorySpace(mem->space);
         }
         mem ++;
     }
@@ -67,7 +68,7 @@ void prepareKernelPaginationTable(){
 }
 
 
-void setupPagination(){
+void setupPagination(KernelController *kernel){
     uint64 NEXT_PAGING_KERNEL=0x100000;
     uint64 p = 0;
     prepareKernelPaginationTable();
