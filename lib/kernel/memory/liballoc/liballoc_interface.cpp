@@ -24,19 +24,19 @@ int liballoc_unlock(){
 
 void* liballoc_alloc(int){
     kprintStr(20,0,"TENTATIVA DE ALOC",BACKGROUND_BLACK|TEXT_WHITE);
-    FrameAllocator& fm = FrameAllocator::getInstance();
-    uint64 val = fm.allocate();
-    kprinthex(20,1,val);
-    kprinthex(35,1,(uint64)&val);
-    kprinthex(50,1,(uint64)liballoc_alloc);
-    while (true);
+    //FrameAllocator& fm = FrameAllocator::getInstance();
+    //uint64 val = fm.allocate();
+    // kprinthex(20,1,val);
+    // kprinthex(35,1,(uint64)&val);
+    // kprinthex(50,1,(uint64)liballoc_alloc);
+    // while (true);
     
-    return (ptr_t)val;
+    return (ptr_t)nullptr;
 }
 
 int liballoc_free(void* ptr,int pages){
-    FrameAllocator& fm = FrameAllocator::getInstance();
-    memory_space space = {(uint64)ptr,PAGE_SIZE*pages};
-    fm.addMemorySpace(space);
+    //FrameAllocator& fm = FrameAllocator::getInstance();
+    //memory_space space = {(uint64)ptr,PAGE_SIZE*pages};
+    //fm.addMemorySpace(space);
     return 0;
 }

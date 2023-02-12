@@ -24,13 +24,6 @@ list_frame_t* list_push(list_frame_t *list,memory_space data){
     return list;
 }
 
-static FrameAllocator instance;
-
-
-FrameAllocator& FrameAllocator::getInstance(){
-    return instance;
-}
-
 
 bool FrameAllocator::loadBuffer(){
     while(qtd_buffer < MAX_BUFFER_FRAMES && this->avaliableMemory != nullptr){

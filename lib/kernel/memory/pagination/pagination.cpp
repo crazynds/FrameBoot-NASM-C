@@ -48,7 +48,7 @@ uint64 loadMemoryInformation(KernelController *kernel){
     return maxMemory;
 }
 
-void prepareKernelPaginationTable(){
+void prepareKernelPaginationTable(PaginationTable *kernelPaginationTable){
     L3DirectoryTable *l3 = (L3DirectoryTable*) L4_ADDR;
     l3 = &l3[510];
     l3->setAddr(L4_ADDR);
@@ -58,7 +58,9 @@ void prepareKernelPaginationTable(){
     l3->setPresent(true);
     l3->setGlobal(true);
     l3->setWriteThrough(true);
-    
+
+    kprinthex(20,20,kernelPaginationTable->getRealAddr((uint64)&prepareKernelPaginationTable));
+
 
     // L2Directory *l2 = (L2Directory*) l3[511].getEntryTable(511);
     // l2->setAddr(0x5000);
@@ -80,12 +82,13 @@ void prepareKernelPaginationTable(){
 
 
 void setupPagination(KernelController *kernel){
+    PaginationTable *kernelPaginationTable = kernel->getKernelPaginationTable();
     uint64 NEXT_PAGING_KERNEL=0x100000;
     uint64 p = 0;
-    prepareKernelPaginationTable();
+    prepareKernelPaginationTable(kernelPaginationTable);
     //uint64 maxMemory = loadMemoryInformation(kernel);
 
-    uint64 base = (NEXT_PAGING_KERNEL + p++ * 0x1000);
-    L3DirectoryTable *l3 = kernelPaginationTable.getEntryTable(0);
+    
+    //L3DirectoryTable *l3 = kernelPaginationTable->getEntryTable(0);
     //l3->setPresent(false);
 }

@@ -160,10 +160,10 @@ public:
 };
 
 enum PAGINATION_LEVEL{
-    L3,
-    L2,
+    PAGE,
     L1,
-    PAGE
+    L2,
+    L3,
 };
 
 
@@ -171,27 +171,7 @@ class PaginationTable{
 private:
     L3DirectoryTable* l4_pointer;
 
-    PageEntry *entry;
-    ptr_t offset;
-
-    void lockEntry(){
-        entry->setPresent(true);
-        entry->setCache(true);
-        entry->setWritable(true);
-        entry->setWriteThrough(false);
-        entry->setSuperuserSpace(true);
-    }
-
-    void unlockEntry(){
-        entry->setPresent(false);
-    }
-
 public:
-
-    void setVirtualSpace(ptr_t offset,ptr_t entry){
-        this->offset = offset;
-        this->entry = (PageEntry*)entry;
-    }
 
     void setBasePointer(ptr_t l4_pointer){
         this->l4_pointer = (L3DirectoryTable*)l4_pointer;
@@ -205,52 +185,41 @@ public:
         return &l4_pointer[pos];
     }
     PaginationEntryInterface* getEntryLevel(uint64 virt,PAGINATION_LEVEL level){
-        uint64 idx = 0;
-        ptr_t addr = 0;
-        PaginationEntryInterface *interface;
-        switch (level)
-        {
-        case L3:
-            idx = (virt >> (12+9*3)) & 0x1FF;
-            if(this->l4_pointer==NULL)return NULL;
-            addr = this->l4_pointer;
-            break;
-        case L2:
-            idx = (virt >> (12+9*2)) & 0x1FF;
-            interface = this->getEntryLevel(virt,L3);
-            if(interface==NULL || !interface->isPresent())return NULL;
-            addr = (ptr_t)interface->getAddr();
-            break;
-        case L1:
-            idx = (virt >> (12+9*1)) & 0x1FF;
-            interface = this->getEntryLevel(virt,L2);
-            if(interface==NULL || !interface->isPresent())return NULL;
-            addr = (ptr_t)interface->getAddr();
-            break;
-        case PAGE:
-        default:
-            idx = (virt >> (12)) & 0x1FF;
-            interface = this->getEntryLevel(virt,L1);
-            if(interface==NULL || !interface->isPresent())return NULL;
-            addr = (ptr_t)interface->getAddr();
-            break;
+        uint16 l1_idx = (virt>>12)&0x1FF;
+        uint16 l2_idx = (virt>>21)&0x1FF;
+        uint16 l3_idx = (virt>>30)&0x1FF;
+        uint16 l4_idx = (virt>>39)&0x1FF;
+        uint16 arr[4] = {l4_idx,l3_idx,l2_idx,l1_idx};
+        PaginationEntryInterface* resp=NULL;
+        for(int loop_level = L3; loop_level >= level; loop_level-=1){
+            uint16 *ptr_arr = (uint16*)&arr;
+            uint64 virtualAddr = 510;
+            uint8 x;
+            for(x=0;x<3;x++){
+                virtualAddr <<= 9;
+                if(x<loop_level){
+                    virtualAddr|=510;
+                }else{
+                    virtualAddr|=*ptr_arr;
+                    ptr_arr++;
+                }
+            }
+            virtualAddr<<=12;
+            PaginationEntryInterface *ptr = (PaginationEntryInterface*)virtualAddr;
+            resp = &ptr[*ptr_arr];
+            if(!resp->isPresent())
+                return NULL;
         }
-        entry->setAddr((uint64)addr);
-        flush_tlb_address(this->offset);
-        return &((PaginationEntryInterface*)this->offset)[idx];
+        return resp;
     }
 
     uint64 getRealAddr(uint64 virt){
         uint64 comp = virt & ~PAGE_MASK;
-        this->lockEntry();
         PageEntry* entry = (PageEntry*)this->getEntryLevel(virt,PAGE);
         uint64 addr = (entry->isPresent())?entry->getAddr()|comp:NULL;
-        this->unlockEntry();
         return addr;
     }
 
 };
-
-static PaginationTable kernelPaginationTable;
 
 #endif
