@@ -193,7 +193,7 @@ public:
         PaginationEntryInterface* resp=NULL;
         for(int loop_level = L3; loop_level >= level; loop_level-=1){
             uint16 *ptr_arr = (uint16*)&arr;
-            uint64 virtualAddr = 510;
+            uint64 virtualAddr = ((uint64)~0)&(~((uint64)(1<<9) - 1)) | 510;
             uint8 x;
             for(x=0;x<3;x++){
                 virtualAddr <<= 9;

@@ -14,9 +14,9 @@ extern "C" void kmain(void){
   kprintStr(0,y++,"Kernel iniciado em 64bits",base);
   setupGDT(kernel);
   kprintStr(0,y++,"GDT definida.",base);
-  setupPagination(kernel);
-  kprintStr(0,y++,"Paginacao definida.",base);
   setupIDT(kernel);
   kprintStr(0,y++,"IDT definida.",base);
+  setupPagination(kernel);
+  kprintStr(0,y++,"Paginacao definida.",base);
   return main();
 }
