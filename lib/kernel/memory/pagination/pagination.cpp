@@ -49,14 +49,14 @@ uint64 loadMemoryInformation(KernelController *kernel){
 }
 
 void prepareKernelPaginationTable(PaginationTable *kernelPaginationTable){
-    L3DirectoryTable *l3 = ((L3DirectoryTable*) L4_ADDR)[510];
+    L3DirectoryTable *l3 = &((L3DirectoryTable*) L4_ADDR)[510];
     l3->setAddr(L4_ADDR);
     l3->setSuperuserSpace(true);
     l3->setCache(true);
     l3->setWritable(true);
     l3->setPresent(true);
     l3->setWriteThrough(true);
-    l3 = ((L3DirectoryTable*) L4_ADDR)[511];
+    l3 = &((L3DirectoryTable*) L4_ADDR)[511];
     l3->setGlobal(true);
     l3->setSuperuserSpace(true);
     l3->setCache(true);

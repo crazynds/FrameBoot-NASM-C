@@ -1,6 +1,7 @@
 [bits 64]
 
 [global acquireLock]
+[global tryAcquireLock] 
 [global releaseLock] 
 
 
@@ -15,6 +16,11 @@ acquireLock:
     jnz .spin_with_pause     ; no, wait
     jmp acquireLock          ; retry
 
+tryAcquireLock:
+    lock bts word [rdi],0        ;Attempt to acquire the lock (in case lock is uncontended)
+    xor eax,eax
+    cmovc eax, -1
+    ret
 
 releaseLock:
     mov word [rdi],0
