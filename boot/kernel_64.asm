@@ -1,7 +1,5 @@
 %define PAGE_PRESENT    (1 << 0)
 %define PAGE_WRITE      (1 << 1)
-%define WRITE_THROUGH   (1 << 3)
-%define USER            (1 << 2)
 %define PAGE            (PAGE_WRITE|PAGE_PRESENT)
 
 [bits 16]

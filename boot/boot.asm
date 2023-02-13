@@ -18,11 +18,9 @@
     mov dh, 0x00	; head no.
     mov cl, 0x02	; start from second sector
     int 0x13 		; BIOS interrupt
-    ;pop dx
-    ;cmp al,dh
-    ;ja $ ; não carregou todo o kernel para a memoria
-    cmp ax,0
-    je $ ; Se ele retornou 0, significa que ele não conseguiu ler por algum erro.
+    or ax,ax   ; Seta a flag zero se ax = 0
+    jz $ ; Se ele retornou 0, significa que ele não conseguiu ler por algum erro.
+    jc $ ; por algum motivo deu erro '
 
     %include "boot/memory_maper.asm"
 

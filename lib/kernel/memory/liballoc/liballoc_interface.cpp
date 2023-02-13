@@ -1,6 +1,8 @@
 
 #include <stdvar.h>
 #include <kernel/gfx.h>
+#include <kernel/class.h>
+#include "../../KernelController.hh"
 #include "../pagination/FrameAllocator.hh"
 
 static uint16 lock = 0;
@@ -23,13 +25,11 @@ int liballoc_unlock(){
 }
 
 void* liballoc_alloc(int){
+    KernelController *kernel = getKernelController();
     kprintStr(20,0,"TENTATIVA DE ALOC",BACKGROUND_BLACK|TEXT_WHITE);
-    //FrameAllocator& fm = FrameAllocator::getInstance();
-    //uint64 val = fm.allocate();
-    // kprinthex(20,1,val);
-    // kprinthex(35,1,(uint64)&val);
-    // kprinthex(50,1,(uint64)liballoc_alloc);
-    // while (true);
+    FrameAllocator* fm = kernel->getFrameAllocator();
+    uint64 val = fm->allocate();
+    while (true);
     
     return (ptr_t)nullptr;
 }

@@ -38,46 +38,58 @@ public:
         return this->entry;
     }
 
-    void copy(const PaginationEntryInterface obj){
-        this->entry = obj.entry;
+    inline void copy(const PaginationEntryInterface *obj){
+        this->entry = obj->entry;
+    }
+    
+    inline void copyFlags(const PaginationEntryInterface *obj){
+        uint64 addr = this->getAddr();
+        this->copy(obj);
+        this->setAddr(addr);
     }
 
     inline void setAddr(uint64 val){
         val &= PAGE_MASK;
-        this->entry &= 0xfff;
+        this->entry &= ~PAGE_MASK;
         this->entry |= val;
     }
 
+    inline void setFlags(uint16 flags){
+        flags &= (uint16)~PAGE_MASK;
+        this->entry &= PAGE_MASK;
+        this->entry |= flags;
+    }
+
     void clearActivityFlag(){
-        this->setFlag(ACCESSED,false);
-        this->setFlag(WRITTEN_IN,false);
+        this->setFlag(PAGE_ACCESSED,false);
+        this->setFlag(PAGE_WRITTEN_IN,false);
     }
 
     inline void set4MBSized(bool value){
         this->setFlag(PAGE_4MB_SIZED,value);
     }
     inline void setWriteThrough(bool value){
-        this->setFlag(WRITE_THROUGH,value);
+        this->setFlag(PAGE_WRITE_THROUGH,value);
     }
     inline void setCache(bool value){
-        this->setFlag(CACHE_DISABLED,!value);
+        this->setFlag(PAGE_CACHE_DISABLED,!value);
     }
 
     inline void setUserSpace(bool value){
-        this->setFlag(USER,value);
+        this->setFlag(PAGE_USER,value);
     }
     inline void setSuperuserSpace(bool value){
         this->setUserSpace(!value);
     }
 
     inline void setPresent(bool value){
-        this->setFlag(PRESENT,value);
+        this->setFlag(PAGE_PRESENT,value);
     }
     inline void setGlobal(bool value){
-        this->setFlag(GLOBAL,value);
+        this->setFlag(PAGE_GLOBAL,value);
     }
     inline void setWritable(bool value){
-        this->setFlag(RW,value);
+        this->setFlag(PAGE_RW,value);
     }
 
     void clear(){
@@ -93,15 +105,15 @@ public:
     }
 
     bool wasWrittenIn(){
-        return (entry & WRITTEN_IN) != 0;
+        return (entry & PAGE_WRITTEN_IN) != 0;
     }
 
     bool wasAccessed(){
-        return (entry & ACCESSED) != 0;
+        return (entry & PAGE_ACCESSED) != 0;
     }
 
     bool isCacheDisabled(){
-        return (entry & CACHE_DISABLED) != 0;
+        return (entry & PAGE_CACHE_DISABLED) != 0;
     }
 
     bool isCacheEnabled(){
@@ -113,11 +125,11 @@ public:
     }
 
     bool isWriteThrough(){
-        return (entry & WRITE_THROUGH) != 0;
+        return (entry & PAGE_WRITE_THROUGH) != 0;
     }
 
     bool isUserSpace(){
-        return (entry & USER) != 0;
+        return (entry & PAGE_USER) != 0;
     }
     
     bool isSupervisorSpace(){
@@ -125,7 +137,7 @@ public:
     }
 
     bool isWritable(){
-        return (entry & RW) != 0;
+        return (entry & PAGE_RW) != 0;
     }
 
     bool isReadOnly(){
@@ -133,7 +145,7 @@ public:
     }
 
     bool isPresent(){
-        return (entry & PRESENT) != 0;
+        return (entry & PAGE_PRESENT) != 0;
     }
 };
 
@@ -166,10 +178,13 @@ enum PAGINATION_LEVEL{
     L3,
 };
 
+class FrameAllocator;
 
 class PaginationTable{
 private:
     L3DirectoryTable* l4_pointer;
+
+    PaginationEntryInterface* _getEntryLevel(uint16 l4_idx,uint16 l3_idx,uint16 l2_idx,uint16 l1_idx,PAGINATION_LEVEL level);
 
 public:
 
@@ -182,43 +197,18 @@ public:
     }
 
     L3DirectoryTable* getEntryTable(uint16 pos){
-        return &l4_pointer[pos];
-    }
-    PaginationEntryInterface* getEntryLevel(uint64 virt,PAGINATION_LEVEL level){
-        uint16 l1_idx = (virt>>12)&0x1FF;
-        uint16 l2_idx = (virt>>21)&0x1FF;
-        uint16 l3_idx = (virt>>30)&0x1FF;
-        uint16 l4_idx = (virt>>39)&0x1FF;
-        uint16 arr[4] = {l4_idx,l3_idx,l2_idx,l1_idx};
-        PaginationEntryInterface* resp=NULL;
-        for(int loop_level = L3; loop_level >= level; loop_level-=1){
-            uint16 *ptr_arr = (uint16*)&arr;
-            uint64 virtualAddr = ((uint64)~0)&(~((uint64)(1<<9) - 1)) | 510;
-            uint8 x;
-            for(x=0;x<3;x++){
-                virtualAddr <<= 9;
-                if(x<loop_level){
-                    virtualAddr|=510;
-                }else{
-                    virtualAddr|=*ptr_arr;
-                    ptr_arr++;
-                }
-            }
-            virtualAddr<<=12;
-            PaginationEntryInterface *ptr = (PaginationEntryInterface*)virtualAddr;
-            resp = &ptr[*ptr_arr];
-            if(!resp->isPresent())
-                return NULL;
-        }
-        return resp;
+        return (L3DirectoryTable*)this->getEntryLevel((uint64)pos<<39,L3);
     }
 
-    uint64 getRealAddr(uint64 virt){
-        uint64 comp = virt & ~PAGE_MASK;
-        PageEntry* entry = (PageEntry*)this->getEntryLevel(virt,PAGE);
-        uint64 addr = (entry->isPresent())?entry->getAddr()|comp:NULL;
-        return addr;
-    }
+    PaginationEntryInterface* getEntryLevel(uint64 virt,PAGINATION_LEVEL level);
+    PaginationEntryInterface* getOrCreateEntryLevel(FrameAllocator *frameAllocator, uint64 virt,PAGINATION_LEVEL level,uint16 flags);
+    uint64 getRealAddr(uint64 virt);
+
+    ptr_t alloc_vm(FrameAllocator *frameAllocator,uint16 base_l3,uint32 pages,uint16 flags);
+    void free_vm(FrameAllocator *frameAllocator,ptr_t virtualAddr,uint16 base_l3,uint32 pages,uint16 flags);
+    
+    void map(FrameAllocator *frameAllocator,ptr_t virtualAddr,uint32 pages,uint16 flags);
+    void unmap(FrameAllocator *frameAllocator,ptr_t virtualAddr,uint32 pages);
 
 };
 
