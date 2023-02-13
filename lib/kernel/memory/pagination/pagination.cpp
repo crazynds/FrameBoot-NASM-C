@@ -41,7 +41,7 @@ uint64 loadMemoryInformation(KernelController *kernel){
         kprintnum(60,10+x,mem->extendedAtb);
         if(mem->type==1 && mem->space.base>=0x100000){
             maxMemory+=mem->space.size&PAGE_MASK;
-            //frameAllocator->addMemorySpace(mem->space);
+            frameAllocator->addMemorySpace(mem->space);
         }
         mem ++;
     }
@@ -62,19 +62,16 @@ void prepareKernelPaginationTable(PaginationTable *kernelPaginationTable){
     l3->setCache(true);
     l3->setWriteThrough(true);
     
+    // Disable pagination on first's addresses
+    l3 = kernelPaginationTable->getEntryTable(0);
+    l3->setPresent(false);
 }
 
 
 void setupPagination(KernelController *kernel){
     PaginationTable *kernelPaginationTable = kernel->getKernelPaginationTable();
-    uint64 NEXT_PAGING_KERNEL=0x100000;
-    uint64 p = 0;
     prepareKernelPaginationTable(kernelPaginationTable);
     uint64 maxMemory = loadMemoryInformation(kernel);
-
-    // Disable pagination on first's addresses
-    L3DirectoryTable *l3 = kernelPaginationTable->getEntryTable(0);
-    l3->setPresent(false);
 
     kprinthex(20,20,(uint64)kernel);  
     kprinthex(20,21,kernelPaginationTable->getRealAddr((uint64)kernel));    

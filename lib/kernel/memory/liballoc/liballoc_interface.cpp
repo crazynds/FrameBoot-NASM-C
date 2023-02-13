@@ -19,19 +19,15 @@ int liballoc_unlock(){
     return 0;
 }
 
-void* liballoc_alloc(int){
+void* liballoc_alloc(int pages){
     KernelController *kernel = getKernelController();
-    kprintStr(20,0,"TENTATIVA DE ALOC",BACKGROUND_BLACK|TEXT_WHITE);
-    FrameAllocator* fm = kernel->getFrameAllocator();
-    uint64 val = fm->allocate();
-    while (true);
-    
-    return (ptr_t)nullptr;
+    PaginationTable* table = kernel->getKernelPaginationTable();
+    return (ptr_t)table->alloc_vm(kernel->getFrameAllocator(),509,pages,PAGE_PRESENT|PAGE_RW);
 }
 
 int liballoc_free(void* ptr,int pages){
-    //FrameAllocator& fm = FrameAllocator::getInstance();
-    //memory_space space = {(uint64)ptr,PAGE_SIZE*pages};
-    //fm.addMemorySpace(space);
+    KernelController *kernel = getKernelController();
+    PaginationTable* table = kernel->getKernelPaginationTable();
+    table->free_vm(kernel->getFrameAllocator(),ptr,pages);
     return 0;
 }

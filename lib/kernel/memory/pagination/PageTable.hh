@@ -205,7 +205,7 @@ public:
     uint64 getRealAddr(uint64 virt);
 
     ptr_t alloc_vm(FrameAllocator *frameAllocator,uint16 base_l3,uint32 pages,uint16 flags);
-    void free_vm(FrameAllocator *frameAllocator,ptr_t virtualAddr,uint16 base_l3,uint32 pages,uint16 flags);
+    void free_vm(FrameAllocator *frameAllocator,ptr_t virtualAddr,uint32 pages);
     
     void map(FrameAllocator *frameAllocator,ptr_t virtualAddr,uint32 pages,uint16 flags);
     void unmap(FrameAllocator *frameAllocator,ptr_t virtualAddr,uint32 pages);

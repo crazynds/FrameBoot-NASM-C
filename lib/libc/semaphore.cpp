@@ -9,11 +9,14 @@ extern "C" void releaseLock(uint16*);
 
 
 int sem_init(sem_t *sem){
-    sem->addr_sem = malloc(sizeof(uint16));
+    sem->addr_sem =(uint16*) malloc(sizeof(uint16));
+    if(sem->addr_sem==nullptr)return -1;
     *sem->addr_sem = 0;
+    return 0;
 }
 int sem_destroy(sem_t *sem){
     free(sem->addr_sem);
+    return 0;
 }
 
 int sem_post(sem_t *sem){

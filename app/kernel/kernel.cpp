@@ -2,6 +2,7 @@
 #include <kernel/gfx.h>
 #include <kernel/setup.h>
 #include <kernel/class.h>
+#include <kernel/panic.h>
 
 
 void main();

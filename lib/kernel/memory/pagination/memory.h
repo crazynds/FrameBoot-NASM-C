@@ -3,7 +3,7 @@
 #include <stdvar.h>
 
 
-#define MAX_BUFFER_FRAMES 16
+#define MAX_BUFFER_FRAMES 64
 #define PAGE_SIZE ((uint64)0x1000)
 #define PAGE_MASK (~(PAGE_SIZE-1))
 

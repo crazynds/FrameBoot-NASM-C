@@ -64,7 +64,7 @@ ptr_t PaginationTable::alloc_vm(FrameAllocator *frameAllocator,uint16 base_l3,ui
     while(z<512 || (z==512 && y<512)){
         PageEntry *entry = (PageEntry*)this->_getEntryLevel(base_l3,z,y,x,PAGE);
         uint32 i;
-        for(i=0;entry==NULL && i<pages;i++){
+        for(i=1;entry==NULL && i<pages;i++){
             entry = (PageEntry*)this->_getEntryLevel(base_l3,z+(y + (x+i)/512)/512,(y + (x+i)/512)%512,(x + i)%512,PAGE);
         }
         if(entry==NULL){
@@ -74,25 +74,26 @@ ptr_t PaginationTable::alloc_vm(FrameAllocator *frameAllocator,uint16 base_l3,ui
             return addr;
         }
 
-        x += i + 1;
+        x += i;
         if(x>512){
-            x=0;
-            y++;
+            y+=x/512;
+            x%=512;
             if(y>512){
-                y=0;
-                z++;
+                z+=y/512;
+                y%=512;
             }
         }
     }
+    return NULL;
 }
-void PaginationTable::free_vm(FrameAllocator *frameAllocator,ptr_t virtualAddr,uint16 base_l3,uint32 pages,uint16 flags){
-
+void PaginationTable::free_vm(FrameAllocator *frameAllocator,ptr_t virtualAddr,uint32 pages){
+    this->unmap(frameAllocator,virtualAddr,pages);
 }
 
 void PaginationTable::map(FrameAllocator *frameAllocator,ptr_t virtualAddr,uint32 pages,uint16 flags){
     uint64 addr = (uint64)virtualAddr;
     for(uint32 x=0;x<pages;x++,addr += PAGE_SIZE){
-        PageEntry *page = (PageEntry*)this->getOrCreateEntryLevel(frameAllocator,addr,PAGE,flags);
+        this->getOrCreateEntryLevel(frameAllocator,addr,PAGE,flags);
     }
 }
 void PaginationTable::unmap(FrameAllocator *frameAllocator,ptr_t virtualAddr,uint32 pages){
