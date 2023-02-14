@@ -9,7 +9,7 @@
 #define LIBALLOC_MAGIC	0xc001c0de
 #define MAXCOMPLETE		5
 #define MAXEXP	32
-#define MINEXP	8	
+#define MINEXP	4
 
 #define MODE_BEST			0
 #define MODE_INSTANT		1
@@ -82,13 +82,13 @@ static void* 	liballoc_memcpy(void* s1, const void* s2, size_t n)
 {
   char *cdest;
   char *csrc;
-  unsigned int *ldest = (unsigned int*)s1;
-  unsigned int *lsrc  = (unsigned int*)s2;
+  uint64 *ldest = (uint64*)s1;
+  uint64 *lsrc  = (uint64*)s2;
 
-  while ( n >= sizeof(unsigned int) )
+  while ( n >= sizeof(uint64) )
   {
       *ldest++ = *lsrc++;
-	  n -= sizeof(unsigned int);
+	  n -= sizeof(uint64);
   }
 
   cdest = (char*)ldest;
