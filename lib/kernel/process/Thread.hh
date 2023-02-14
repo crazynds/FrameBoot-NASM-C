@@ -20,7 +20,11 @@ class Thread{
 private:
     cpu_state_t state;
     stack_t stack;
-public:
 
+    Process *father;
+public:
+    Thread(Process *father){
+        this->father = father;
+    }
 
 };

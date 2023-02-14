@@ -2,15 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
-void* calloc(size_t size)
-{
-    void* mem = malloc(size);
-    memset(mem, 0, size);
-
-    return mem;
-}
-
 char* int_to_string(int64 value, char* str, int base)
 {
     char* rc;
@@ -99,7 +90,7 @@ char* utoa(uint32 value, char* str, int base)
     return unsigned_int_to_string(value, str, base);
 }
 
-char* itoa(int value, char* str, int base)
+char* itoa(int32 value, char* str, int base)
 {
     return int_to_string(value, str, base);
 }
@@ -156,41 +147,4 @@ uint64 atol(const char* str)
 int atoi(const char* str)
 {
     return string_to_int<int>(str, nullptr, 10);
-}
-
-double pow(double x, double y)
-{
-    double result = x;
-
-    for(double d = 0.0f; d < y; d++)
-    {
-        result *= x;
-    }
-
-    return result;
-}
-
-int abs(int i)
-{
-    return i < 0 ? -i : i;
-}
-
-int sqrt(int x)
-{
-    int quotient = 0;
-    int i = 0;
-
-    bool answer_found = false;
-    while(answer_found == false)
-    {
-        if(i * i == x)
-        {
-          quotient = i;
-          answer_found = true;
-        }
-
-        i++;
-    }
-
-    return quotient;
 }

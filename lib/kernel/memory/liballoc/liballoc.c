@@ -281,7 +281,7 @@ static struct boundary_tag* allocate_new_tag( unsigned int size )
 
 
 
-void *malloc(size_t size)
+void *kernel_malloc(size_t size)
 {
 	int index;
 	void *ptr;
@@ -396,7 +396,7 @@ void *malloc(size_t size)
 
 
 
-void free(void *ptr)
+void kernel_free(void *ptr)
 {
 	int index;
 	struct boundary_tag *tag;
@@ -491,14 +491,14 @@ void free(void *ptr)
 
 
 
-void* calloc(size_t nobj, size_t size)
+void* kernel_calloc(size_t nobj, size_t size)
 {
        int real_size;
        void *p;
 
        real_size = nobj * size;
        
-       p = malloc( real_size );
+       p = kernel_malloc( real_size );
 
        liballoc_memset( p, 0, real_size );
 
@@ -507,7 +507,7 @@ void* calloc(size_t nobj, size_t size)
 
 
 
-void*   realloc(void *p, size_t size)
+void*   kernel_realloc(void *p, size_t size)
 {
 	void *ptr;
 	struct boundary_tag *tag;
@@ -515,10 +515,10 @@ void*   realloc(void *p, size_t size)
 	
 	if ( size == 0 )
 	{
-		free( p );
+		kernel_free( p );
 		return NULL;
 	}
-	if ( p == NULL ) return malloc( size );
+	if ( p == NULL ) return kernel_malloc( size );
 
 	//if ( liballoc_lock != NULL ) 
 		liballoc_lock();		// lockit
@@ -529,9 +529,9 @@ void*   realloc(void *p, size_t size)
 
 	if ( real_size > size ) real_size = size;
 
-	ptr = malloc( size );
+	ptr = kernel_malloc( size );
 	liballoc_memcpy( ptr, p, real_size );
-	free( p );
+	kernel_free( p );
 
 	return ptr;
 }

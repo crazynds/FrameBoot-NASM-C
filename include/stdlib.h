@@ -12,6 +12,8 @@ __BEGIN_DECLS
 
 void* malloc(size_t size);
 
+void* calloc(size_t obj_size, size_t new_size);
+
 void* realloc(void* mem, size_t new_size);
 
 void free(void* ptr);
@@ -20,9 +22,9 @@ char* ltoa(int64 value, char* str, int base);
 
 char* ultoa(uint64 value, char* str, int base);
 
-char* utoa(uint64 value, char* str, int base);
+char* utoa(uint32 value, char* str, int base);
 
-char* itoa(int value, char* str, int base);
+char* itoa(int32 value, char* str, int base);
 
 int64 strtol(const char* str, char** endptr, int base);
 

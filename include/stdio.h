@@ -15,48 +15,45 @@ extern FILE* stderr;
 
 #define EOF -1
 
-FILE* fopen(const char *filename, const char *mode);
+// FILE* fopen(const char *filename, const char *mode);
 
-FILE* fdopen(int fd, const char* mode);
+// FILE* fdopen(int fd, const char* mode);
 
-size_t fread(void* buff, size_t size, size_t count, FILE* file);
+// size_t fread(void* buff, size_t size, size_t count, FILE* file);
 
-size_t fwrite(const void* buff, size_t size, size_t count, FILE* file);
+// size_t fwrite(const void* buff, size_t size, size_t count, FILE* file);
 
-int fgetc(FILE* file);
+// int fgetc(FILE* file);
 
-int fputc(int c, FILE* file);
+// int fputc(int c, FILE* file);
 
-int fputs(const char* str, FILE* file);
+// int fputs(const char* str, FILE* file);
 
-int getc(FILE* file);
+// int getc(FILE* file);
 
-int putc(int c, FILE* file);
+// int putc(int c, FILE* file);
 
-int putchar(int c);
+// int putchar(int c);
 
-int getchar();
+// int getchar();
 
-int puts(const char* str);
-
-int vsnprintf(char* buff, size_t n, const char* fmt, va_list args);
-
-int vsprintf(char* buff, const char* fmt, va_list args); /* unsafe */
+// int puts(const char* str);
 
 int sprintf(char* buff, const char* fmt, ...);
-
 int snprintf(char* buff, size_t n, const char* fmt, ...);
+int vsnprintf(char* buff, size_t n, const char* fmt, va_list args);
+int vsprintf(char* buff, const char* fmt, va_list args);
 
-int vfprintf(FILE* file, const char* fmt, va_list args);
+// int vfprintf(FILE* file, const char* fmt, va_list args);
 
-int fprintf(FILE* file, const char* fmt, ...);
+// int fprintf(FILE* file, const char* fmt, ...);
 
-int vprintf(const char* fmt, va_list args);
+// int vprintf(const char* fmt, va_list args);
 
-int printf(const char* string, ...);
+// int printf(const char* string, ...);
 
-int vsscanf(const char* buffer, const char* format, va_list args);
+// int vsscanf(const char* buffer, const char* format, va_list args);
 
-int sscanf(const char* buffer, const char* format, ...);
+// int sscanf(const char* buffer, const char* format, ...);
 
 __END_DECLS

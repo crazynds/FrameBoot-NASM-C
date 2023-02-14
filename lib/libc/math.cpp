@@ -1,11 +1,38 @@
 
-/*estava com um bug mas foi consertado*/
-int pow(int ex,int el){
-    if(el==0)return 1;
-    int aux=ex,x=1;
-    while(x<el){
-        aux*=ex;
-        x++;
+double pow(double x, double y)
+{
+    if(y==0)return 1;
+    double result = x;
+
+    for(double d = 0.0f; d < y; d++)
+    {
+        result *= x;
     }
-    return aux;
+
+    return result;
+}
+
+int abs(int i)
+{
+    return i < 0 ? -i : i;
+}
+
+int sqrt(int x)
+{
+    int quotient = 0;
+    int i = 0;
+
+    bool answer_found = false;
+    while(answer_found == false)
+    {
+        if(i * i == x)
+        {
+          quotient = i;
+          answer_found = true;
+        }
+
+        i++;
+    }
+
+    return quotient;
 }

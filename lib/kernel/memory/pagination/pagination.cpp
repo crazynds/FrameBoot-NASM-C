@@ -67,12 +67,28 @@ void prepareKernelPaginationTable(PaginationTable *kernelPaginationTable){
     l3->setPresent(false);
 }
 
-
+#include <stdio.h>
 void setupPagination(KernelController *kernel){
     PaginationTable *kernelPaginationTable = kernel->getKernelPaginationTable();
     prepareKernelPaginationTable(kernelPaginationTable);
     uint64 maxMemory = loadMemoryInformation(kernel);
+    kernel->setMaxMemory(maxMemory);
 
     kprinthex(20,20,(uint64)kernel);  
     kprinthex(20,21,kernelPaginationTable->getRealAddr((uint64)kernel));    
+
+    
+    char buffer[100];
+    uint64 free = kernel->getFreeMemory();
+    uint64 max = kernel->getMaxMemory();
+    int x=0;
+    char arr[4] = {' ','K','M','G'};
+    while(free>(1024*1024) && max>(1024*1024)){
+        free/=1024;
+        max/=1024;
+        x++;
+    }
+
+    sprintf(buffer,"Memoria: %x %cB/%x %cB (%.2f%%)",free,arr[x],max,arr[x],((free*100.0)/max));
+    kprintStr(0,23,buffer,BACKGROUND_BLACK|TEXT_WHITE);
 }

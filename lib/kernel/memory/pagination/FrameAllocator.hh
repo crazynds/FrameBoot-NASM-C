@@ -26,6 +26,7 @@ private:
 public:
 
     uint64 allocate();
+    uint64 freeMemory();
     void addMemorySpace(memory_space map);
 
 };

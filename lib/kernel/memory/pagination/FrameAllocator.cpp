@@ -1,5 +1,6 @@
 #include "FrameAllocator.hh"
 #include <kernel/panic.h>
+#include <kernel/alloc.h>
 
 extern "C" int acquireLock(uint16*);
 extern "C" void releaseLock(uint16*);
@@ -24,11 +25,20 @@ list_frame_t* FrameAllocator::list_push(volatile list_frame_t *list,list_frame_t
             volatile list_frame_t *tmp = list->next;
             list->next = tmp->next;
             releaseLock(&this->lock[1]);
-            delete tmp;
+            kernel_free((ptr_t)tmp);
             acquireLock(&this->lock[1]);
         }
     }
     return (list_frame_t*)list;
+}
+uint64 FrameAllocator::freeMemory(){
+    uint64 sum = 0;
+    list_frame_t *ptr = this->avaliableMemory;
+    while(ptr!=nullptr){
+        sum+= ptr->data.size;
+        ptr = (list_frame_t*)ptr->next;
+    }
+    return sum;
 }
 
 
@@ -39,7 +49,7 @@ bool FrameAllocator::loadBuffer(){
 
         if(space.size < PAGE_SIZE){
             list_frame_t *next = (list_frame_t *)this->avaliableMemory->next;
-            delete this->avaliableMemory;
+            kernel_free(this->avaliableMemory);
             this->avaliableMemory = next;
         }else{
             this->addFrameInBuffer(space.base);
@@ -68,9 +78,9 @@ void FrameAllocator::addMemorySpace(memory_space map){
     }
 
     if(map.size < PAGE_SIZE)return;
-    list_frame_t *newObj = new list_frame_t;
+    list_frame_t *newObj = (list_frame_t*)kernel_malloc(sizeof(list_frame_t));
     if(newObj==NULL){
-        panic("[FrameAllocator::addMemorySpace]: Objeto alocado pelo new retornou NULL, falta de memória?");
+        panic("[FrameAllocator::addMemorySpace]: Objeto alocado pelo kernel malloc retornou NULL, falta de memória?");
     }
     newObj->data = map;
     acquireLock(&this->lock[1]);
@@ -79,8 +89,10 @@ void FrameAllocator::addMemorySpace(memory_space map){
 }
 
 uint64 FrameAllocator::allocate(){
-    if(this->qtd_buffer<=MAX_BUFFER_FRAMES/2 && !this->loadBuffer())
+    if(this->qtd_buffer<=MAX_BUFFER_FRAMES/2 && !this->loadBuffer()){
+        panic("[FrameAllocator::allocate]: Sem frames disponiveis, falta de memória?");        
         return NULL;
+    }
     acquireLock(&this->lock[0]);
     uint64 frame = this->frame_buffer[--this->qtd_buffer];
     releaseLock(&this->lock[0]);

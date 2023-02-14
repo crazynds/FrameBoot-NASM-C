@@ -237,3 +237,4 @@ char* strndup(const char* s, size_t size)
 
     return (char*)memcpy(mem, s, len);
 }
+

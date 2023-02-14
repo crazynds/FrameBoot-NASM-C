@@ -3,23 +3,6 @@
 #include <stdio.h>
 #include <System.h>
 
-//uint32 _sprintf(char *out, char *str,const void *var_list);
-
-// void _printf(char *str,void *var_list){
-//   char buffer[256];
-//   _sprintf(&buffer,str,var_list);
-//   output_stream *out=NOW_THREAD->output;
-//   ((void (*)(void*,char*))out->funcOut)(out,buffer);
-// }
-
-// void putchar(char c){
-//   char str[2]={0,'\0'};
-//   str[0]=c;
-//   output_stream *out=NOW_THREAD->output;
-//   ((void (*)(void*,char*))out->funcOut)(out,str);
-// }
-
-
 #define ESC 0
 #define BACKSPACE 13
 #define LEFT_CONTROL 28
