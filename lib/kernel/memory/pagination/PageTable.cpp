@@ -35,10 +35,18 @@ inline PaginationEntryInterface* PaginationTable::_getEntryLevel(uint16 l4_idx,u
         CONVERT_PAGE_IDX_TO_ADDR(510,510,510,l4_idx) + l3_idx*8,
         CONVERT_PAGE_IDX_TO_ADDR(510,510,510,510) + l4_idx*8,
     };
+    bool positionEvenIfNotPresent = false;
+    if(level>L3){
+        int aux = level;
+        aux -= 4;
+        level = (PAGINATION_LEVEL)aux;
+        positionEvenIfNotPresent = true;
+        virtualAddrArr[aux]=0;
+    }
     PaginationEntryInterface* resp=NULL;
     for(int loop_level = L3; loop_level >= level; loop_level-=1){
         resp = (PaginationEntryInterface*)virtualAddrArr[loop_level];
-        if(!resp->isPresent())
+        if(!resp->isPresent() && (!positionEvenIfNotPresent || loop_level!=level))
             return NULL;
     }
     return resp;

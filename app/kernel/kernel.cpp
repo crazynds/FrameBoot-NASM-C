@@ -19,6 +19,8 @@ extern "C" void kmain(void){
   kprintStr(0,y++,"IDT definida.",base);
   setupPagination(kernel);
   kprintStr(0,y++,"Paginacao definida.",base);
+  //setupProcess(kernel);
+  //kprintStr(0,y++,"Processo inicializado.",base);
 
   return main();
 }

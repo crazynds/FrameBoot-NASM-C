@@ -6,5 +6,6 @@
     void setupPagination(KernelController *);
     void setupGDT(KernelController *);
     void setupIDT(KernelController *);
+    void setupProcess(KernelController *);
 
 #endif

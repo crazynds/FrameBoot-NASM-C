@@ -3,8 +3,8 @@
 #include "memory/gdt/Gdt.hh"
 #include "memory/pagination/FrameAllocator.hh"
 #include "memory/pagination/PageTable.hh"
-#include "process/Process.hh"
 
+class Process;
 
 class KernelController{
 private:
@@ -13,12 +13,20 @@ private:
     PaginationTable kernelPaginationTable;
     uint64 maxMemory;
     uint16 lock_var;
+
+    Process *currentProcess;
     
 public:
 
     void lock();
     void unlock();
 
+    void setCurrentProcess(Process *process){
+        this->currentProcess = process;
+    }
+    Process* getCurrentProcess(){
+        return this->currentProcess;
+    }
     void setMaxMemory(uint64 maxMemory){
         this->maxMemory = maxMemory;
     }

@@ -176,6 +176,10 @@ enum PAGINATION_LEVEL{
     L1,
     L2,
     L3,
+    L1_TAB,
+    L2_TAB,
+    L3_TAB,
+    L4_TAB
 };
 
 class FrameAllocator;
