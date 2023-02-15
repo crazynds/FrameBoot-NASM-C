@@ -28,10 +28,6 @@ iso: bin/os-image
 bin/os-image: bin/boot_sect.bin bin/kernel.bin
 	cat bin/boot_sect.bin bin/kernel.bin > bin/os-image
 
-
-# bin/all_src.cpp: lib/* compile.sh
-# 	./compile.sh
-
 $(c___object_files): bin/c/%.o : lib/%.c
 	mkdir -p $(dir $@) && \
 	gcc $(GCC_FLAGS) $(patsubst bin/c/%.o, lib/%.c, $@) -o $@
@@ -40,7 +36,6 @@ $(cpp_object_files): bin/cpp/%.o : lib/%.cpp
 	mkdir -p $(dir $@) && \
 	g++ $(GCC_FLAGS) $(patsubst bin/cpp/%.o, lib/%.cpp, $@) -o $@
 
-
 $(nasm_object_files): bin/asm/%.o : asm/%.asm
 	mkdir -p $(dir $@) && \
 	nasm -f elf64 $(patsubst bin/asm/%.o, asm/%.asm, $@) -o $@
@@ -48,7 +43,6 @@ $(nasm_object_files): bin/asm/%.o : asm/%.asm
 bin/kernel.bin: app/kernel/kernel.cpp app/app.cpp $(cpp_object_files) $(nasm_object_files) $(c___object_files)
 	g++ $(GCC_FLAGS) app/kernel/kernel.cpp -o bin/kernel.o 
 	g++ $(GCC_FLAGS) app/app.cpp -o bin/app.o 
-#	g++ $(GCC_FLAGS) bin/all_src.cpp -o bin/compiled.o
 	ld -e 0x7E00 -T link.ld -o bin/kernel.elf bin/app.o bin/kernel.o $(c___object_files) $(cpp_object_files) $(nasm_object_files)
 	objcopy -O binary bin/kernel.elf bin/kernel.bin
 
