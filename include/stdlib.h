@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdvar.h>
 #include <cdefs.h>
 
 

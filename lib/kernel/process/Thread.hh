@@ -15,6 +15,7 @@ typedef struct{
     uint64 size;
 } stack_t;
 
+class Process;
 
 class Thread{
 private:
@@ -23,7 +24,7 @@ private:
 
     Process *father;
 public:
-    Thread(Process *father){
+    void setup(Process *father){
         this->father = father;
     }
 

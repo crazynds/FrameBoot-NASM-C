@@ -23,7 +23,7 @@ struct memory_space{
 };
 
 struct memory_map{
-    memory_space space;
+    struct memory_space space;
     uint32 type;
     uint32 extendedAtb;
 }__attribute__((packed));

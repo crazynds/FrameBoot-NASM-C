@@ -1,5 +1,5 @@
 #include <kernel/panic.h>
-
+#include <stdlib.h>
 
 void* malloc(size_t){
     panic("MALLOC IS NOT DEFINED");

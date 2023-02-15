@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cdefs.h>
 
 
 __BEGIN_DECLS

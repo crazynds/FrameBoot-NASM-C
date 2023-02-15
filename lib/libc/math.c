@@ -1,3 +1,5 @@
+#include <math.h>
+#include <stdvar.h>
 
 double pow(double x, double y)
 {

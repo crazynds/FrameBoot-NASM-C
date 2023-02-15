@@ -1,3 +1,4 @@
+#include <stdvar.h>
 #include "liballoc.h"
 #include "../pagination/memory.h"
 
@@ -507,7 +508,7 @@ void* kernel_calloc(size_t nobj, size_t size)
 
 
 
-void*   kernel_realloc(void *p, size_t size)
+void*   kernel_realloc(void* p, size_t size)
 {
 	void *ptr;
 	struct boundary_tag *tag;

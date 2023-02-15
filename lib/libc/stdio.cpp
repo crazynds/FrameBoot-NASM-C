@@ -1,24 +1,36 @@
 #include <stdlib.h>
-// #include <cstdio>
-// #include <cstring>
-// #include <fcntl.h>
-// #include <sys/types.h>
-
-// #include <liback/syscalls.h>
+#include <stdarg.h>
+#include <string.h>
+#include <math.h>
+#include <cdefs.h>
 
 #define	STDIN_FILENO	0	/* Standard input.  */
 #define	STDOUT_FILENO	1	/* Standard output.  */
 #define	STDERR_FILENO	2	/* Standard error output.  */
 
+
+enum
+{
+    O_RDONLY = 0x00,
+    O_WRONLY = 0x1,
+    O_RDWR = 0x2,
+    O_CREAT = 0x100,
+    O_TRUNC = 0x1000,
+    O_APPEND = 0x2000,
+    O_DIRECTORY = 0x200000
+};
+
+__BEGIN_DECLS
+
+
 struct FILE{
     int flags;
-    off_t offset;
+    uint64 offset;
     char* buff;
     int buff_size;
     int fd;
     int status;
 };
-
 static FILE _stdin = { .flags = O_RDONLY, .offset = 0, .buff = nullptr, .buff_size = 0, .fd = STDIN_FILENO, .status = 0 };
 static FILE _stdout = { .flags = O_WRONLY, .offset = 0, .buff = nullptr, .buff_size = 0, .fd = STDOUT_FILENO, .status = 0 };
 static FILE _stderr = { .flags = O_WRONLY, .offset = 0, .buff = nullptr, .buff_size = 0, .fd = STDERR_FILENO, .status = 0  };
@@ -27,12 +39,14 @@ FILE* stdin = &_stdin;
 FILE* stdout = &_stdout;
 FILE* stderr = &_stderr;
 
+
+
 int vsnprintf(char* buff, size_t n, const char* fmt, va_list args)
 {
     size_t length = 0;
     //size_t fmt_len = strlen(fmt);
 
-    struct {
+    struct configuration{
         bool aling_left = true;
         bool zero_left = false;
         int space = 0;
@@ -565,3 +579,6 @@ int sprintf(char* buff, const char* fmt, ...)
     
 //     return n;
 // }
+
+
+__END_DECLS

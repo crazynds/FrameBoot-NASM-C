@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include "memory/gdt/Gdt.hh"
 #include "memory/pagination/FrameAllocator.hh"
 #include "memory/pagination/PageTable.hh"
@@ -13,7 +12,7 @@ private:
     FrameAllocator frameAllocator;
     PaginationTable kernelPaginationTable;
     uint64 maxMemory;
-    uint16 lock;
+    uint16 lock_var;
     
 public:
 

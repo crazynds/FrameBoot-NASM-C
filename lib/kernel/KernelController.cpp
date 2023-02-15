@@ -11,10 +11,10 @@ KernelController *getKernelController(){
     return &kernelController;
 }
 void KernelController::lock(){
-    acquireLock(&this->lock);
+    acquireLock(&this->lock_var);
 }
 void KernelController::unlock(){
-    releaseLock(&this->lock);
+    releaseLock(&this->lock_var);
 }
 
 void panic(const char *str){

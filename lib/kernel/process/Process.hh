@@ -2,12 +2,11 @@
 
 #include <stdvar.h>
 #include <vector>
-#include "Thread.hh"
 #include "../memory/pagination/PageTable.hh"
-#include "../../KernelController.hh"
+#include "../KernelController.hh"
 
 typedef struct fd_interface fd_interface_t;
-
+class Thread;
 
 class Process{
 private:
