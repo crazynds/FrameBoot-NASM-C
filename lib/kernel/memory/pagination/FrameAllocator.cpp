@@ -1,6 +1,7 @@
 #include "FrameAllocator.hh"
 #include <kernel/panic.h>
 #include <kernel/alloc.h>
+#include <stdvar.h>
 
 extern "C" int acquireLock(uint16*);
 extern "C" void releaseLock(uint16*);

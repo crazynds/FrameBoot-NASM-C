@@ -1,7 +1,7 @@
 #include <kernel/gfx.h>
 #include <kernel/asmFunctions.hh>
 #include <kernel/address.h>
-#include <stdlib.h>
+#include <stdio.h>
 
 struct Char{
     char c;
@@ -80,22 +80,22 @@ extern "C" void kprintStr(int x,int y,const char *s,color col){
 
 void kprintnum(int a,int b,int64 x){
     char c[40];
-    ltoa(x,c,10);
+    sprintf(c,"%ld",x);
     kprintStr(a,b,c,0x0f);
 }
 void kprinthex(int a,int b,uint64 x){
     char c[40] = {'0','x','0'};
-    ultoa(x,c+2,16);
+    sprintf(c,"%x",x);
     kprintStr(a,b,c,0x0f);
 }
 void kprintnum2(int64 x){
     char c[40];
-    ltoa(x,c,10);
+    sprintf(c,"%ld",x);
     kprintStr(70,0,c,0x0f);
 }
 uint8 val=0;
 void kprintnum3(int64 x){
     char c[40];
-    ltoa(x,c,10);
+    sprintf(c,"%ld",x);
     kprintStr(6,7+val++,c,0x0f);
 }

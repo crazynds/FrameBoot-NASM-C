@@ -3,7 +3,9 @@
 
     #include <stdbool.h>
 
-    #define NULL 0
+    #ifndef NULL
+	    #define NULL 0L
+	#endif
     
     typedef unsigned long long int uint64;
     typedef unsigned int uint32;
@@ -15,15 +17,13 @@
     typedef char int8;
 
     typedef unsigned long int  size_t;
-    #define _HAVE_SIZE_T
 
     typedef void* ptr_t;
 
 
 
     typedef char boolean;
-    
-    #define NULL 0
+
     #define KB ((uint64)1024)
     #define MB ((uint64)1024*KB)
     #define GB ((uint64)1024*MB)

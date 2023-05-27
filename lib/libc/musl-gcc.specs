@@ -1,0 +1,32 @@
+%rename cpp_options old_cpp_options
+
+*cpp_options:
+-nostdinc -isystem /windows/FrameBoot/musl/build/include -isystem include%s %(old_cpp_options)
+
+*cc1:
+%(cc1_cpu) -nostdinc -isystem /windows/FrameBoot/musl/build/include -isystem include%s
+
+*link_libgcc:
+-L/windows/FrameBoot/musl/build/lib -L .%s
+
+*libgcc:
+libgcc.a%s %:if-exists(libgcc_eh.a%s)
+
+*startfile:
+%{!shared: /windows/FrameBoot/musl/build/lib/Scrt1.o} /windows/FrameBoot/musl/build/lib/crti.o crtbeginS.o%s
+
+*endfile:
+crtendS.o%s /windows/FrameBoot/musl/build/lib/crtn.o
+
+*link:
+-dynamic-linker /windows/FrameBoot/musl/build/lib/ld-musl-x86_64.so.1 -nostdlib %{shared:-shared} %{static:-static} %{rdynamic:-export-dynamic}
+
+*esp_link:
+
+
+*esp_options:
+
+
+*esp_cpp_options:
+
+

@@ -5,7 +5,11 @@ nasm_object_files := $(patsubst asm/%.asm, bin/asm/%.o,$(nasm_source_files))
 cpp_object_files := $(patsubst lib/%.cpp, bin/cpp/%.o,$(cpp_source_files))
 c___object_files := $(patsubst lib/%.c, bin/c/%.o,$(c___source_files))
 
-GCC_FLAGS=-O1 -g2 -c -m64 -fno-exceptions -ffreestanding -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs -Wunused-variable -Wunused-function -I include
+GCC_FLAGS = -O1 -g2 -c -m64 -nostdlib -nostartfiles -nodefaultlibs -fno-exceptions -ffreestanding 
+GCC_FLAGS+= -Wall -Wextra -Wunused-variable -Wunused-function
+GCC_FLAGS+= -I include/libc -I include/libcpp -I include
+
+LINKER_LIBC_OBJ := $(shell find lib/libc -name *.o) $(shell find lib/libc -name *.a)
 
 all: bin/os-image
 	make debug
@@ -25,6 +29,8 @@ iso: bin/os-image
 	mkisofs -no-emul-boot -b os-image -o SO.iso iso/
 	make clean
 
+build: bin/os-image
+
 bin/os-image: bin/boot_sect.bin bin/kernel.bin
 	cat bin/boot_sect.bin bin/kernel.bin > bin/os-image
 
@@ -43,7 +49,7 @@ $(nasm_object_files): bin/asm/%.o : asm/%.asm
 bin/kernel.bin: app/kernel/kernel.cpp app/app.cpp $(cpp_object_files) $(nasm_object_files) $(c___object_files)
 	g++ $(GCC_FLAGS) app/kernel/kernel.cpp -o bin/kernel.o 
 	g++ $(GCC_FLAGS) app/app.cpp -o bin/app.o 
-	ld -e 0x7E00 -T link.ld -o bin/kernel.elf bin/app.o bin/kernel.o $(c___object_files) $(cpp_object_files) $(nasm_object_files)
+	ld -e 0x7E00 -T link.ld -o bin/kernel.elf bin/app.o bin/kernel.o $(c___object_files) $(cpp_object_files) $(nasm_object_files) $(LINKER_LIBC_OBJ)
 	objcopy -O binary bin/kernel.elf bin/kernel.bin
 
 bin/boot_sect.bin: boot/boot.asm bin
@@ -53,5 +59,9 @@ bin:
 	mkdir bin
 
 clean:
+	rm -rf iso
+	rm bin/* -r
+
+clear:
 	rm -rf iso
 	rm bin/* -r

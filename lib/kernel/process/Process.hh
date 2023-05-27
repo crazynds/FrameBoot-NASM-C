@@ -1,7 +1,6 @@
 #pragma once
 
 #include <stdvar.h>
-#include <vector>
 #include "../memory/pagination/PageTable.hh"
 #include "../KernelController.hh"
 #include "thread.h"
