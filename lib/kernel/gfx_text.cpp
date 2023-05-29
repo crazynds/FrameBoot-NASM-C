@@ -146,8 +146,8 @@ void kprintnum(int a,int b,int64 x){
     kprintStr(a,b,c,0x0f);
 }
 void kprinthex(int a,int b,uint64 x){
-    char c[40] = {'0','x','0'};
-    sprintf(c,"%x",x);
+    char c[40];
+    sprintf(c,"0x%lx",x);
     kprintStr(a,b,c,0x0f);
 }
 void kprintnum2(int64 x){
