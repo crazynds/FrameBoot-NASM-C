@@ -3,6 +3,9 @@
 
         #include <stdvar.h>
 
+        #define CLEAR_TEXT_COLOR(P) (P&0xF0)
+        #define CLEAR_BACKGROUND_COLOR(P) (P&0x0F)
+
         enum {
             TEXT_BLACK         = 0,
             TEXT_BLUE          = 1,

@@ -34,12 +34,20 @@ uint64 loadMemoryInformation(KernelController *kernel){
     struct memory_map *mem = (struct memory_map*)(KERNEL_OFFSET+0x7E000+24);
     uint64 maxMemory = 0;
     FrameAllocator* frameAllocator = kernel->getFrameAllocator();
-    char sizes_types[5][4] = {
+    const char* sizes_types[5] = {
         "B",
         "KB",
         "MB",
         "GB",
         "TB"
+    };
+    const char* memory_types[6] = {
+        "NOT_DEFINED",
+        "FREE",
+        "RESERVED",
+        "ACPI",
+        "ACPI NVS",
+        "BAD_MEMORY"
     };
 
     for(int x=0;mem->space.size!=0;x++){
@@ -51,7 +59,7 @@ uint64 loadMemoryInformation(KernelController *kernel){
             type++;
         }
 
-        sprintf(str,"Memoria: 0x%-8x (%6.2f %s) %d %d",mem->space.base,size,sizes_types[type],mem->type,mem->extendedAtb);
+        sprintf(str,"\033[0;32mMemoria\033[0m: 0x%-8x (\033[0;36m%7.2f %2s\033[0m) %s",mem->space.base,size,sizes_types[type],memory_types[mem->type]);
         kprintStr(1,10+x,str,0x0f);
         if(mem->type==1 && mem->space.base>=0x100000){
             maxMemory+=mem->space.size&PAGE_MASK;

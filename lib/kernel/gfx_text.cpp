@@ -56,15 +56,77 @@ void clrscr(color col){
 }
 
 extern "C" void kprintStr(int x,int y,const char *s,color col){
+    color originalColor = col;
     x%=NUM_COLS;
     y%=NUM_ROWS;
     while(*s!='\0'){
-        if(*s=='\n'){
+        switch (*s)
+        {
+        case '\n':
             y+=1;
             x=0;
-        }else{
+            break;
+        case '\033':
+            if(*(s+1)!='[')break;
+            s++;
+            if(*(s+1)!='0')break;
+            s++;
+            if(*(s+1)=='m'){
+                s++;
+                col = originalColor;
+                break;
+            }
+            if(*(s+1)!=';')break;
+                s++;
+            if(*(s+1)!='3')break;
+            s+=2;
+            switch (*s)
+            {
+            case '0':
+                col = CLEAR_TEXT_COLOR(col);
+                col |= TEXT_BLACK;
+                break;
+            case '1':
+                col = CLEAR_TEXT_COLOR(col);
+                col |= TEXT_RED;
+                break;
+            case '2':
+                col = CLEAR_TEXT_COLOR(col);
+                col |= TEXT_GREEN;
+                break;
+            case '3':
+                col = CLEAR_TEXT_COLOR(col);
+                col |= TEXT_YELLOW;
+                break;
+            case '4':
+                col = CLEAR_TEXT_COLOR(col);
+                col |= TEXT_BLUE;
+                break;
+            case '5':
+                col = CLEAR_TEXT_COLOR(col);
+                col |= TEXT_PINK;
+                break;
+            case '6':
+                col = CLEAR_TEXT_COLOR(col);
+                col |= TEXT_CYAN;
+                break;
+            case '7':
+                col = CLEAR_TEXT_COLOR(col);
+                col |= TEXT_WHITE;
+                break;
+            default:
+                kprintChar(x++,y,'G',TEXT_PINK|BACKGROUND_BLACK);
+                s-=1;
+                break;
+            }
+            if(*(s+1)=='m')
+                s++;
+
+            break;
+        default:
             kprintChar(x,y,*s,col);
             x++;
+            break;
         }
         if(x>=(int)NUM_COLS){
             y++;
