@@ -1,5 +1,7 @@
 #include <kernel/gfx.h>
 #include <stdvar.h>
+#include <stdio.h>
+#include <math.h>
 #include <kernel/address.h>
 #include "../../KernelController.hh"
 
@@ -32,13 +34,25 @@ uint64 loadMemoryInformation(KernelController *kernel){
     struct memory_map *mem = (struct memory_map*)(KERNEL_OFFSET+0x7E000+24);
     uint64 maxMemory = 0;
     FrameAllocator* frameAllocator = kernel->getFrameAllocator();
+    char sizes_types[5][4] = {
+        "B",
+        "KB",
+        "MB",
+        "GB",
+        "TB"
+    };
 
     for(int x=0;mem->space.size!=0;x++){
-        kprintStr(1,10+x,"Memoria",0x0f);
-        kprinthex(15,10+x,mem->space.base);
-        kprinthex(30,10+x,mem->space.size);
-        kprintnum(45,10+x,mem->type);
-        kprintnum(60,10+x,mem->extendedAtb);
+        char str[80];
+        double size = mem->space.size;
+        int type = 0;
+        while(size > 1024){
+            size/=1024.0;
+            type++;
+        }
+
+        sprintf(str,"Memoria: 0x%-8x (%6.2f %s) %d %d",mem->space.base,size,sizes_types[type],mem->type,mem->extendedAtb);
+        kprintStr(1,10+x,str,0x0f);
         if(mem->type==1 && mem->space.base>=0x100000){
             maxMemory+=mem->space.size&PAGE_MASK;
             frameAllocator->addMemorySpace(mem->space);
@@ -67,7 +81,6 @@ void prepareKernelPaginationTable(PaginationTable *kernelPaginationTable){
     l3->setPresent(false);
 }
 
-#include <stdio.h>
 void setupPagination(KernelController *kernel){
     PaginationTable *kernelPaginationTable = kernel->getKernelPaginationTable();
     prepareKernelPaginationTable(kernelPaginationTable);
