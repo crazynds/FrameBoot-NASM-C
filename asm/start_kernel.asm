@@ -6,12 +6,12 @@ section .entry
 [extern enable_sse]
 [extern write_fsbase]
 [extern write_gsbase]
-
+[extern setup_syscall]
 
 _start:
     ; Correct the kernel address to high memory
     mov rax, _start.upper_memory
-    jmp rax
+    jmp far rax
     .upper_memory:
 
     ; Initialize segment registers
@@ -25,15 +25,16 @@ _start:
     xor rdi,rdi
     mov gs, edi
     mov fs, edi
-    mov rbx,0xFFFFFF8000000000
+    mov rdi,0xFFFFFF8000000000
     ; Set FS base and GS base to upper memory pointer
-    mov rdi, rbx
+    push rdi
     call write_gsbase
-    mov rdi, rbx
+    pop rdi
     call write_fsbase
 
     mov rbp,stack.start
     mov rsp,rbp
+
     
     ; Blank out the screen to a blue color.
     mov edi, 0xB8000
@@ -46,6 +47,12 @@ _start:
 
     cli
     call kmain
+    
+    ; Enable and setup syscall 
+    call setup_syscall
+
+    syscall
+
     jmp $
     ;jmp .helt
 .helt:

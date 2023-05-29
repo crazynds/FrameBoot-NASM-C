@@ -1,7 +1,7 @@
 : Script para rodar no windows
 
 : requisitos: 
-    : WSL instalado mom os programas necessários para compilar (make gcc g++ nasm), 
+    : WSL instalado mom os programas necessários para compilar (make gcc g++ nasm mkisofs), 
     : QEMU instalado no windows e no path, 
     : programas padrões GNU instalados no windows (make, rm, rmdir)
 
