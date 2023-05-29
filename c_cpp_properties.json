@@ -3,7 +3,9 @@
       {
         "name": "FrameBoot",
         "includePath": [
-            "${workspaceFolder}/include"
+          "${workspaceFolder}/libc",
+          "${workspaceFolder}/libcpp",
+          "${workspaceFolder}"
         ],
         "browse": {
             "path": ["${workspaceFolder}"],

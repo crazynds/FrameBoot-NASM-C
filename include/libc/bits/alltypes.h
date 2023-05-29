@@ -1,6 +1,12 @@
-#define _Addr long
-#define _Int64 long
-#define _Reg long
+#ifdef _WIN64
+    #define _Addr long long
+    #define _Int64 long long
+    #define _Reg long long
+#else
+    #define _Addr long
+    #define _Int64 long
+    #define _Reg long
+#endif
 
 #define __BYTE_ORDER 1234
 #define __LONG_MAX 0x7fffffffffffffffL

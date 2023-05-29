@@ -1,7 +1,6 @@
 section .entry
 [bits 64]
 
-[extern start_64]
 [extern stack.start]
 [extern kmain]
 [extern enable_sse]
@@ -45,7 +44,6 @@ _start:
     ;enable SSE operations
     call enable_sse
 
-    start_64:
     cli
     call kmain
     jmp $

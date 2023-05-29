@@ -3,6 +3,9 @@
 
     #include <stdbool.h>
 
+    #define __NEED_size_t
+    #include <bits/alltypes.h>
+
     #ifndef NULL
 	    #define NULL 0L
 	#endif
@@ -15,8 +18,6 @@
     typedef int int32;
     typedef short int16;
     typedef char int8;
-
-    typedef unsigned long int  size_t;
 
     typedef void* ptr_t;
 
