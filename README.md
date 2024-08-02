@@ -15,7 +15,7 @@ Contains all your source code in Asm language.
 ### Boot
 
 Boot is the source code used to boot in the hardware, and setup your cpu to 64 bit mode. This code also loads your application to memory and after 
-finish all setup call to start function in the kernel_entry file.
+finish all setup call the start function in the kernel_entry file.
 
 ### Include
 
